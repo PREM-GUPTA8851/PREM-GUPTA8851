@@ -2,14 +2,14 @@
 
 # Hi 👋, I'm Prem Kumar Gupta
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=24&duration=2500&pause=1000&center=true&vCenter=true&width=700&color=00F7FF&lines=Java+Developer;DSA+Enthusiast;Full+Stack+Developer;Future+Software+Engineer;Always+Learning+🚀"/>
-
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=24&duration=2500&pause=1000&center=true&vCenter=true&width=700&color=00F7FF&lines=Java+Developer;DSA+Enthusiast;Full+Stack+Developer;Future+Software+Engineer;Always+Learning+🚀" />
 
 </div>
 
 ---
 
 # 👨‍💻 About Me
+
 
 - 🎓 B.Tech CSE @ Lovely Professional University (LPU)
 - 💻 Currently mastering Java & Data Structures & Algorithms
