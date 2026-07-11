@@ -21,7 +21,5 @@
 ### 🛠️ Languages & Tools
 
 <p align="center">
-
-<img src="https://skillicons.dev/icons?i=java,cpp,c,html,css,js,react,nodejs,express,mongodb,mysql,git,github,docker,vscode&perline=7"/>
-
+<img src="https://skillicons.dev/icons?i=java,cpp,c,python,html,css,js,ts,react,nextjs,nodejs,express,spring,maven,mongodb,mysql,postgres,redis,docker,kubernetes,aws,git,github,linux,bash,vscode,idea,postman,figma,vercel,netlify&perline=6" />
 </p>
