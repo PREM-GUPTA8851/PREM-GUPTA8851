@@ -15,7 +15,7 @@
 - 🎓 B.Tech CSE @ Lovely Professional University (LPU)
 - 💻 Currently mastering Java & Data Structures & Algorithms
 - 🌱 Learning Full Stack Development & System Design
-- 🎯 Goal: Software Engineer (USA)
+🎯 Goal: Aspiring AI Software Engineer | Building Intelligent Solutions for Millions
 - 📫 Email: **premgupta100705@gmail.com**
 
 ---
