@@ -112,9 +112,7 @@
 <img src="https://skillicons.dev/icons?i=linkedin" height="50"/>
 </a>
 
-<a href="mailto:premgupta100705@gmail.com" target="_blank">
-<img src="https://skillicons.dev/icons?i=gmail" height="50"/>
-</a>
+
 
 <a href="https://github.com/PREM-GUPTA8851" target="_blank">
 <img src="https://skillicons.dev/icons?i=github" height="50"/>
