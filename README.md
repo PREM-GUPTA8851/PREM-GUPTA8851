@@ -10,7 +10,7 @@
 
 <br><br>
 
-🎓 <b>B.Tech CSE @ Lovely Professional University (LPU)</b>
+🎓 <b>B.Tech CSE'28 @ Lovely Professional University (LPU)</b>
 
 <br><br>
 </div>
