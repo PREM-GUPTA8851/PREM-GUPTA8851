@@ -8,11 +8,11 @@
 
 🚀 <b>SSoC Season 5 Contributor</b><br>
 
-🎓 <b>B.Tech CSE'28 @ Lovely Professional University (LPU)</b>
+🎓 <b>B.Tech CSE '28 @ LPU</b>
 
 <br><br>
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=24&duration=2500&pause=1000&center=true&vCenter=true&width=700&color=00F7FF&lines=Java+Developer;DSA+Enthusiast;Full+Stack+Developer;Future+Software+Engineer;Always+Learning"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=24&duration=2500&pause=1000&center=true&vCenter=true&width=700&color=00F7FF&lines=Java+Developer;DSA+Enthusiast;Full+Stack+Developer;Open+Source+ Contributor;Future+Software+Engineer;Always+Learning"/>
 
 </div>
 
@@ -22,9 +22,10 @@
 
 
 - 🎓 B.Tech CSE @ Lovely Professional University (LPU)
-- 💻 Currently mastering Java & Data Structures & Algorithms
+- 💻 Passionate about Java, DSA & Problem Solving
 - 🌱 Learning Full Stack Development & System Design
-- 🎯 Goal: Aspiring AI Software Engineer | Building Intelligent Solutions for Millions
+- 🤖 Exploring Artificial Intelligence & Machine Learning
+- 🎯 Goal: Build AI-Powered Products That Impact Millions
 - 📫 Email: **premgupta100705@gmail.com**
 
 ---
