@@ -1,6 +1,6 @@
 <div align="center">
 
-# Hi 👋, I'm Prem Kumar Gupta
+# Hi , I'm Prem Kumar Gupta
 
 🏆 <b>GSSoC'25 Campus Ambassador</b><br>
 
