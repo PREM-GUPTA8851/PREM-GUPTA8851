@@ -104,7 +104,7 @@
 <p align="center">
 
 <!-- LinkedIn link yahan apna add kar -->
-<a href="https://www.linkedin.com/">
+<a href="https://www.linkedin.com/in/prem-kumar-gupta-3b253b367/">
 <img src="https://skillicons.dev/icons?i=linkedin"/>
 </a>
 
