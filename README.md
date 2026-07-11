@@ -12,8 +12,7 @@
 
 <br><br>
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=24&duration=2500&pause=1000&center=true&vCenter=true&width=700&color=00F7FF&lines=Java+Developer;DSA+Enthusiast;Full+Stack+Developer;Open+Source+ Contributor;Future+Software+Engineer;Always+Learning"/>
-
+<img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=24&duration=2500&pause=1000&center=true&vCenter=true&width=700&color=00F7FF&lines=Java+Developer;AI+Enthusiast;DSA+Enthusiast;Full+Stack+Developer;Open+Source+Contributor;Aspiring+AI+Software+Engineer"/>
 </div>
 
 ---
@@ -24,8 +23,8 @@
 - 🎓 B.Tech CSE @ Lovely Professional University (LPU)
 - 💻 Passionate about Java, DSA & Problem Solving
 - 🌱 Learning Full Stack Development & System Design
-- 🤖 Exploring Artificial Intelligence & Machine Learning
-- 🎯 Goal: Build AI-Powered Products That Impact Millions
+-  🤖 Exploring AI, Machine Learning & Intelligent Systems
+- 🎯 Goal: Build AI-Powered Products That Solve Real-World Problems
 - 📫 Email: **premgupta100705@gmail.com**
 
 ---
