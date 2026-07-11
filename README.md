@@ -2,6 +2,22 @@
 
 # Hi 👋, I'm Prem Kumar Gupta
 
+<div align="center">
+
+🏆 <b>GSSoC'25 Campus Ambassador</b> &nbsp; • &nbsp;
+🌟 <b>Open Source Contributor</b> &nbsp; • &nbsp;
+🚀 <b>SSoC Season 5 Contributor</b>
+
+<br><br>
+
+🎓 <b>B.Tech CSE @ Lovely Professional University (LPU)</b>
+
+<br><br>
+
+<img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=24&duration=2500&pause=1000&center=true&vCenter=true&width=700&color=00F7FF&lines=Java+Developer;AI+Enthusiast;DSA+Enthusiast;Full+Stack+Developer;Aspiring+AI+Software+Engineer"/>
+
+</div>
+
 <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=24&duration=2500&pause=1000&center=true&vCenter=true&width=700&color=00F7FF&lines=Java+Developer;DSA+Enthusiast;Full+Stack+Developer;Future+Software+Engineer;Always+Learning" />
 
 </div>
