@@ -104,14 +104,20 @@
 </p>
 
 ---
-
 # 🌐 Connect With Me
 
 <p align="center">
 
-<!-- LinkedIn link yahan apna add kar -->
-<a href="https://www.linkedin.com/in/prem-kumar-gupta-3b253b367/">
-<img src="https://skillicons.dev/icons?i=linkedin"/>
+<a href="https://www.linkedin.com/in/prem-kumar-gupta-3b253b367/" target="_blank">
+<img src="https://skillicons.dev/icons?i=linkedin" height="50"/>
+</a>
+
+<a href="mailto:premgupta100705@gmail.com" target="_blank">
+<img src="https://skillicons.dev/icons?i=gmail" height="50"/>
+</a>
+
+<a href="https://github.com/PREM-GUPTA8851" target="_blank">
+<img src="https://skillicons.dev/icons?i=github" height="50"/>
 </a>
 
 </p>
@@ -121,5 +127,7 @@
 <div align="center">
 
 ### ⭐ Thanks for visiting my profile ⭐
+
+<i>"Building intelligent software, one project at a time."</i>
 
 </div>
