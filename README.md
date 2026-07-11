@@ -103,10 +103,6 @@
 
 <p align="center">
 
-<a href="mailto:premgupta100705@gmail.com">
-<img src="https://skillicons.dev/icons?i=gmail"/>
-</a>
-
 <!-- LinkedIn link yahan apna add kar -->
 <a href="https://www.linkedin.com/">
 <img src="https://skillicons.dev/icons?i=linkedin"/>
