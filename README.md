@@ -2,23 +2,25 @@
 
 # Hi 👋, I'm Prem Kumar Gupta
 
-### 🚀 Java Developer | DSA Enthusiast | Full Stack Developer
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=24&duration=2500&pause=1000&center=true&vCenter=true&width=700&color=00F7FF&lines=Java+Developer;DSA+Enthusiast;Full+Stack+Developer;Future+Software+Engineer;Always+Learning+🚀"/>
+
+<img src="https://komarev.com/ghpvc/?username=PREM-GUPTA8851&label=Profile+Views&color=0e75b6&style=for-the-badge"/>
 
 </div>
 
 ---
 
-### 👨‍💻 About Me
+# 👨‍💻 About Me
 
 - 🎓 B.Tech CSE @ Lovely Professional University (LPU)
-- 💻 Currently mastering Java & Data Structures and Algorithms
+- 💻 Currently mastering Java & Data Structures & Algorithms
 - 🌱 Learning Full Stack Development & System Design
-- 🎯 Goal: Software Engineer
-- 📫 Email: premgupta100705@gmail.com
+- 🎯 Goal: Software Engineer (USA)
+- 📫 Email: **premgupta100705@gmail.com**
 
 ---
 
-### 🛠️ Languages & Tools
+# 🛠 Languages & Tools
 
 <p align="center">
 
@@ -45,7 +47,6 @@
 <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white"/>
 <img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazonaws&logoColor=FF9900"/>
 <img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black"/>
-<img src="https://img.shields.io/badge/Bash-121011?style=for-the-badge&logo=gnu-bash&logoColor=white"/>
 <img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white"/>
 <img src="https://img.shields.io/badge/VS_Code-007ACC?style=for-the-badge&logo=visualstudiocode&logoColor=white"/>
 <img src="https://img.shields.io/badge/IntelliJ_IDEA-000000?style=for-the-badge&logo=intellijidea&logoColor=white"/>
@@ -53,3 +54,70 @@
 <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white"/>
 
 </p>
+
+---
+
+# 📊 GitHub Stats
+
+<p align="center">
+
+<img height="170" src="https://github-readme-stats.vercel.app/api?username=PREM-GUPTA8851&show_icons=true&theme=tokyonight&hide_border=true"/>
+
+<img height="170" src="https://github-readme-stats.vercel.app/api/top-langs/?username=PREM-GUPTA8851&layout=compact&theme=tokyonight&hide_border=true"/>
+
+</p>
+
+---
+
+# 🔥 GitHub Streak
+
+<p align="center">
+
+<img src="https://streak-stats.demolab.com?user=PREM-GUPTA8851&theme=tokyonight&hide_border=true"/>
+
+</p>
+
+---
+
+# 📈 Contribution Graph
+
+<p align="center">
+
+<img src="https://github-readme-activity-graph.vercel.app/graph?username=PREM-GUPTA8851&theme=tokyo-night&hide_border=true"/>
+
+</p>
+
+---
+
+# 🏆 GitHub Trophies
+
+<p align="center">
+
+<img src="https://github-profile-trophy.vercel.app/?username=PREM-GUPTA8851&theme=tokyonight&no-frame=true&row=2&column=4"/>
+
+</p>
+
+---
+
+# 🌐 Connect With Me
+
+<p align="center">
+
+<a href="mailto:premgupta100705@gmail.com">
+<img src="https://skillicons.dev/icons?i=gmail"/>
+</a>
+
+<!-- LinkedIn link yahan apna add kar -->
+<a href="https://www.linkedin.com/">
+<img src="https://skillicons.dev/icons?i=linkedin"/>
+</a>
+
+</p>
+
+---
+
+<div align="center">
+
+### ⭐ Thanks for visiting my profile ⭐
+
+</div>
