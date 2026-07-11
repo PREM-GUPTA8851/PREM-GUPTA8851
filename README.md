@@ -4,7 +4,6 @@
 
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=24&duration=2500&pause=1000&center=true&vCenter=true&width=700&color=00F7FF&lines=Java+Developer;DSA+Enthusiast;Full+Stack+Developer;Future+Software+Engineer;Always+Learning+🚀"/>
 
-<img src="https://visitor-badge.laobi.icu/badge?page_id=PREM-GUPTA8851.PREM-GUPTA8851"/>
 
 </div>
 
