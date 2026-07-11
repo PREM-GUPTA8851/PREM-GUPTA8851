@@ -4,8 +4,7 @@
 
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=24&duration=2500&pause=1000&center=true&vCenter=true&width=700&color=00F7FF&lines=Java+Developer;DSA+Enthusiast;Full+Stack+Developer;Future+Software+Engineer;Always+Learning+🚀"/>
 
-<img src="https://komarev.com/ghpvc/?username=PREM-GUPTA8851&label=Profile%20Views&color=0e75b6&style=for-the-badge"/>
-
+<img src="https://img.shields.io/badge/Profile%20Views-850-blue?style=for-the-badge"/>
 </div>
 
 ---
