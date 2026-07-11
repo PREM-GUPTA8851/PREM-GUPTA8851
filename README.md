@@ -4,7 +4,7 @@
 
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=24&duration=2500&pause=1000&center=true&vCenter=true&width=700&color=00F7FF&lines=Java+Developer;DSA+Enthusiast;Full+Stack+Developer;Future+Software+Engineer;Always+Learning+🚀"/>
 
-<img src="https://komarev.com/ghpvc/?username=PREM-GUPTA8851&label=Profile+Views&color=0e75b6&style=for-the-badge"/>
+<img src="https://komarev.com/ghpvc/?username=PREM-GUPTA8851&label=Profile%20Views&color=0e75b6&style=for-the-badge"/>
 
 </div>
 
@@ -61,12 +61,11 @@
 
 <p align="center">
 
-<img height="170" src="https://github-readme-stats.vercel.app/api?username=PREM-GUPTA8851&show_icons=true&theme=tokyonight&hide_border=true"/>
+<img height="170" src="https://github-readme-stats.vercel.app/api?username=PREM-GUPTA8851&show_icons=true&theme=tokyonight&hide_border=true&cache_seconds=86400"/>
 
-<img height="170" src="https://github-readme-stats.vercel.app/api/top-langs/?username=PREM-GUPTA8851&layout=compact&theme=tokyonight&hide_border=true"/>
+<img height="170" src="https://github-readme-stats.vercel.app/api/top-langs/?username=PREM-GUPTA8851&layout=compact&theme=tokyonight&hide_border=true&cache_seconds=86400"/>
 
 </p>
-
 ---
 
 # 🔥 GitHub Streak
@@ -93,7 +92,7 @@
 
 <p align="center">
 
-<img src="https://github-profile-trophy.vercel.app/?username=PREM-GUPTA8851&theme=tokyonight&no-frame=true&row=2&column=4"/>
+<img src="https://github-profile-trophy.vercel.app/?username=PREM-GUPTA8851&theme=tokyonight&no-frame=true&no-bg=true&margin-w=10"/>
 
 </p>
 
