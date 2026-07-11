@@ -1,16 +1,27 @@
-## Hi there 👋
+<div align="center">
 
-<!--
-**PREM-GUPTA8851/PREM-GUPTA8851** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+# Hi 👋, I'm Prem Kumar Gupta
 
-Here are some ideas to get you started:
+### 🚀 Java Developer | DSA Enthusiast | Full Stack Developer
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+</div>
+
+---
+
+### 👨‍💻 About Me
+
+- 🎓 B.Tech CSE @ Lovely Professional University (LPU)
+- 💻 Currently mastering Java & Data Structures and Algorithms
+- 🌱 Learning Full Stack Development & System Design
+- 🎯 Goal: Software Engineer
+- 📫 Email: premgupta100705@gmail.com
+
+---
+
+### 🛠️ Languages & Tools
+
+<p align="center">
+
+<img src="https://skillicons.dev/icons?i=java,cpp,c,html,css,js,react,nodejs,express,mongodb,mysql,git,github,docker,vscode&perline=7"/>
+
+</p>
