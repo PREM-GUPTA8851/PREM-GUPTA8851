@@ -1,29 +1,26 @@
 <div align="center">
 
-# Hi , I'm Prem Kumar Gupta
+# Hi, I'm Prem Kumar Gupta
 
 🏆 <b>GSSoC'25 Campus Ambassador</b><br>
-
 🌟 <b>Open Source Contributor</b><br>
-
 🚀 <b>SSoC Season 5 Contributor</b><br>
-
 🎓 <b>B.Tech CSE '28 @ LPU</b>
 
 <br><br>
 
 <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=24&duration=2500&pause=1000&center=true&vCenter=true&width=700&color=00F7FF&lines=Java+Developer;AI+Enthusiast;DSA+Enthusiast;Full+Stack+Developer;Open+Source+Contributor;Aspiring+AI+Software+Engineer"/>
+
 </div>
 
 ---
 
 # 👨‍💻 About Me
 
-
 - 🎓 B.Tech CSE @ Lovely Professional University (LPU)
 - 💻 Passionate about Java, DSA & Problem Solving
 - 🌱 Learning Full Stack Development & System Design
--  🤖 Exploring AI, Machine Learning & Intelligent Systems
+- 🤖 Exploring AI, Machine Learning & Intelligent Systems
 - 🎯 Goal: Build AI-Powered Products That Solve Real-World Problems
 - 📫 Email: **premgupta100705@gmail.com**
 
@@ -64,7 +61,6 @@
 
 </p>
 
-
 ---
 
 # 🔥 GitHub Streak
@@ -77,24 +73,21 @@
 
 ---
 
-
-
 # 📈 Contribution Graph
 
 <p align="center">
 
-<img src="https://github-readme-activity-graph.vercel.app/graph?username=PREM-GUPTA8851&theme=tokyo-night&hide_border=true&area=true&custom_title=Prem%20Kumar%20Gupta%27s%20GitHub%20Activity"/>
+<img src="./profile/contribution-graph.svg" alt="GitHub Contribution Graph" width="100%"/>
 
 </p>
+
+---
 
 # 🏆 GitHub Trophies
 
 <p align="center">
 
-<a href="https://github.com/ryo-ma/github-profile-trophy">
-<img src="https://github-profile-trophy.vercel.app/?username=PREM-GUPTA8851&theme=onedark&no-frame=true&margin-w=10" />
-
-</a>
+<img src="./profile/trophy.svg" alt="GitHub Trophies" width="100%"/>
 
 </p>
 
@@ -107,8 +100,6 @@
 <a href="https://www.linkedin.com/in/prem-kumar-gupta-3b253b367/" target="_blank">
 <img src="https://skillicons.dev/icons?i=linkedin" height="50"/>
 </a>
-
-
 
 <a href="https://github.com/PREM-GUPTA8851" target="_blank">
 <img src="https://skillicons.dev/icons?i=github" height="50"/>
