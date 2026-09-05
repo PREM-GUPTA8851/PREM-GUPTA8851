@@ -87,6 +87,18 @@
 
 </p>
 
+# 🏆 GitHub Trophies
+
+<p align="center">
+
+<a href="https://github.com/ryo-ma/github-profile-trophy">
+<img src="https://github-profile-trophy.vercel.app/?username=PREM-GUPTA8851&theme=onedark&no-frame=true&margin-w=10" />
+
+</a>
+
+</p>
+
+---
 
 # 🌐 Connect With Me
 
