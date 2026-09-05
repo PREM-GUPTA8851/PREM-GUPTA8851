@@ -1,0 +1,41 @@
+name: Update Profile Graphics
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-profile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create profile directory
+        run: mkdir -p profile
+
+      - name: Generate GitHub Trophy
+        uses: soulteary/github-profile-trophy-action@v1.0.0
+        with:
+          options: 'username=PREM-GUPTA8851&theme=onedark&no-frame=true&margin-w=10'
+          path: profile/trophy.svg
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate Contribution Graph
+        uses: Man0dya/Readme-Contribution-Graph-Generator@main
+        with:
+          username: PREM-GUPTA8851
+          output: profile/contribution-graph.svg
+
+      - name: Commit generated files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add profile/
+          git diff --cached --quiet || git commit -m "Update profile graphics"
+          git push
