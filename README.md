@@ -76,8 +76,6 @@
 <p align="center"> 
  <img src="https://leogitreadme.vercel.app/api/trophy?username=PREM-GUPTA8851&theme=tokyonight" alt="trophy" /> 
 </p>
----
-
 # 🌐 Connect With Me
 
 <p align="center">
