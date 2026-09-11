@@ -86,7 +86,8 @@
 # 🏆 GitHub Trophies
 
 <p align="center">
-  <img src="https://leogitreadme.vercel.app/api/trophy?username=PREM-GUPTA8851&theme=tokyonight" alt="trophy" />
+ <!-- // <img src="https://leogitreadme.vercel.app/api/trophy?username=PREM-GUPTA8851&theme=tokyonight" alt="trophy" /> -->
+  [![trophy](https://github-profile-trophy.vercel.app/?username=PREM-GUPTA8851)](https://github.com/ryo-ma/github-profile-trophy)
 </p>
 
 ---
