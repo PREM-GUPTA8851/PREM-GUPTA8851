@@ -71,18 +71,6 @@
 
 </p>
 
----
-
-# 📈 Contribution Graph
-
-<p align="center">
-
-<img src="./profile/contribution-graph.svg" alt="GitHub Contribution Graph" width="100%"/>
-
-</p>
-
----
-
 # 🏆 GitHub Trophies
 
 <p align="center"> 
