@@ -86,9 +86,7 @@
 # 🏆 GitHub Trophies
 
 <p align="center">
-
-<img src="./profile/trophy.svg" alt="GitHub Trophies" width="100%"/>
-
+<img src="https://leogitreadme.vercel.app/api/trophy?username=PREM-GUPTA8851" alt="trophy" />
 </p>
 
 ---
