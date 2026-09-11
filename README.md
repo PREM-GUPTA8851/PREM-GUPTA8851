@@ -85,9 +85,7 @@
 
 # 🏆 GitHub Trophies
 
-<p align="center">
-  <img src="https://github-profile-trophy.vercel.app/?username=PREM-GUPTA8851" alt="GitHub Trophies" />
-</p>
+[![trophy](https://github-profile-trophy.vercel.app/?username=PREM-GUPTA8851)](https://github.com/ryo-ma/github-profile-trophy)
 
 ---
 
