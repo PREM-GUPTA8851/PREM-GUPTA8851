@@ -1,4 +1,4 @@
-<div align="center">
+<img width="988" height="706" alt="image" src="https://github.com/user-attachments/assets/13ec0669-1164-4265-8531-35f686f6475f" /><div align="center">
 
 # Hi, I'm Prem Kumar Gupta
 
@@ -85,7 +85,7 @@
 
 <p align="center">
 
-<img src="https://github-readme-activity-graph.vercel.app/graph?username=PREM-GUPTA8851&theme=tokyo-night&hide_border=true" />
+<img width="988" height="706" alt="image" src="https://github.com/user-attachments/assets/eb1a7200-93d2-4fa0-a116-4addf124b213" />
 
 </p>
 
