@@ -586,7 +586,7 @@ jobs:
 
           draw.text(
               (112, 302),
-              "@Cognizant",
+              ""@PREM_GUPTA8851"",
               font=info_font,
               fill=TEXT
           )
