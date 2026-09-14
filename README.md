@@ -1,3 +1,4 @@
+<div align="center">
 
 # Hi, I'm Prem Kumar Gupta
 
@@ -6,7 +7,7 @@
 🚀 <b>SSoC Season 5 Contributor</b><br>
 🎓 <b>B.Tech CSE '28 @ LPU</b>
 
-<br><br>
+<br>
 
 <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=24&duration=2500&pause=1000&center=true&vCenter=true&width=700&color=00F7FF&lines=Java+Developer;AI+Enthusiast;DSA+Enthusiast;Full+Stack+Developer;Open+Source+Contributor;Aspiring+AI+Software+Engineer" />
 
@@ -15,6 +16,7 @@
 ---
 
 # 👨‍💻 About Me
+
 
 - 🎓 B.Tech CSE @ Lovely Professional University (LPU)
 - 💻 Passionate about Java, DSA & Problem Solving
