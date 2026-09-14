@@ -79,9 +79,9 @@
 <p align="center">
 
 <img
-  src="https://raw.githubusercontent.com/PREM-GUPTA8851/PREM-GUPTA8851/main/github-contribution-card.svg"
+  src="https://raw.githubusercontent.com/PREM-GUPTA8851/PREM-GUPTA8851/main/github-contribution-card.png"
   alt="PREM-GUPTA8851 GitHub Contribution Activity"
-  width="100%"
+  width="820"
 />
 
 </p>
