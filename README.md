@@ -66,9 +66,7 @@
 # 📊 GitHub Stats
 
 <p align="center">
-
-<img src="https://github-readme-stats.vercel.app/api?username=PREM-GUPTA8851&show_icons=true&theme=tokyonight&hide_border=true" />
-
+<img src="https://ghstats.dev/api/card?username=PREM-GUPTA8851&theme=midnight" alt="GitHub Stats Card" />
 </p>
 
 ---
