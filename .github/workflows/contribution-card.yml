@@ -1,0 +1,304 @@
+name: Update GitHub Contribution Card
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-card:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate contribution card
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME: PREM-GUPTA8851
+        run: |
+          python3 <<'PY'
+          import os
+          import json
+          import urllib.request
+          from datetime import datetime, timedelta
+
+          username = os.environ["USERNAME"]
+          token = os.environ["GITHUB_TOKEN"]
+
+          query = """
+          query($login: String!) {
+            user(login: $login) {
+              login
+              name
+              createdAt
+              repositories(ownerAffiliations: OWNER, first: 1) {
+                totalCount
+              }
+              contributionsCollection {
+                contributionCalendar {
+                  totalContributions
+                  weeks {
+                    contributionDays {
+                      date
+                      contributionCount
+                    }
+                  }
+                }
+              }
+              organizations(first: 20) {
+                nodes {
+                  login
+                }
+              }
+            }
+          }
+          """
+
+          data = json.dumps({
+              "query": query,
+              "variables": {"login": username}
+          }).encode()
+
+          request = urllib.request.Request(
+              "https://api.github.com/graphql",
+              data=data,
+              headers={
+                  "Authorization": f"Bearer {token}",
+                  "Content-Type": "application/json",
+                  "User-Agent": username
+              }
+          )
+
+          with urllib.request.urlopen(request) as response:
+              result = json.load(response)
+
+          if "errors" in result:
+              raise Exception(result["errors"])
+
+          user = result["data"]["user"]
+          calendar = user["contributionsCollection"]["contributionCalendar"]
+
+          total = calendar["totalContributions"]
+          repos = user["repositories"]["totalCount"]
+
+          created = datetime.fromisoformat(
+              user["createdAt"].replace("Z", "+00:00")
+          )
+
+          now = datetime.now(created.tzinfo)
+          years = now.year - created.year
+
+          if (now.month, now.day) < (created.month, created.day):
+              years -= 1
+
+          organizations = user["organizations"]["nodes"]
+          org_names = [x["login"] for x in organizations]
+
+          company = "Cognizant" if "Cognizant" in org_names else ""
+
+          days = []
+
+          for week in calendar["weeks"]:
+              for day in week["contributionDays"]:
+                  days.append(day)
+
+          days = days[-365:]
+
+          counts = [d["contributionCount"] for d in days]
+          max_count = max(counts) if counts else 1
+
+          width = 1100
+          height = 330
+
+          graph_x = 500
+          graph_y = 80
+          graph_w = 540
+          graph_h = 160
+
+          points = []
+
+          for i, day in enumerate(days):
+              x = graph_x + (i / max(1, len(days) - 1)) * graph_w
+              y = graph_y + graph_h - (
+                  day["contributionCount"] / max_count
+              ) * graph_h
+
+              points.append((x, y))
+
+          line = " ".join(
+              f"{x:.1f},{y:.1f}" for x, y in points
+          )
+
+          area = (
+              f"{graph_x},{graph_y + graph_h} "
+              + line
+              + f" {graph_x + graph_w},{graph_y + graph_h}"
+          )
+
+          months = []
+
+          for i, day in enumerate(days):
+              date = datetime.strptime(day["date"], "%Y-%m-%d")
+
+              if date.day <= 7:
+                  x = graph_x + (i / max(1, len(days) - 1)) * graph_w
+                  months.append((x, date.strftime("%b")))
+
+          month_labels = ""
+
+          for x, month in months:
+              month_labels += f'''
+              <text x="{x:.1f}" y="270"
+                    fill="#9be7e7"
+                    font-size="12"
+                    text-anchor="middle">{month}</text>
+              '''
+
+          svg = f'''<svg xmlns="http://www.w3.org/2000/svg"
+              width="{width}"
+              height="{height}"
+              viewBox="0 0 {width} {height}">
+
+            <rect x="0" y="0"
+                  width="{width}"
+                  height="{height}"
+                  rx="8"
+                  fill="#12111f"/>
+
+            <rect x="1"
+                  y="1"
+                  width="{width-2}"
+                  height="{height-2}"
+                  rx="8"
+                  fill="none"
+                  stroke="#303044"
+                  stroke-width="2"/>
+
+            <text x="42" y="52"
+                  fill="#ff3b9d"
+                  font-size="22"
+                  font-family="Arial, sans-serif"
+                  font-weight="500">
+              {username}
+            </text>
+
+            <text x="42" y="105"
+                  fill="#ffe11a"
+                  font-size="16"
+                  font-family="Arial, sans-serif">
+              ●
+            </text>
+
+            <text x="62" y="105"
+                  fill="#c9f5f5"
+                  font-size="15"
+                  font-family="Arial, sans-serif">
+              {total:,} Contributions on GitHub
+            </text>
+
+            <text x="42" y="140"
+                  fill="#ffe11a"
+                  font-size="16"
+                  font-family="Arial, sans-serif">
+              ▣
+            </text>
+
+            <text x="62" y="140"
+                  fill="#c9f5f5"
+                  font-size="15"
+                  font-family="Arial, sans-serif">
+              {repos} Public Repos
+            </text>
+
+            <text x="42" y="175"
+                  fill="#ffe11a"
+                  font-size="16"
+                  font-family="Arial, sans-serif">
+              ◷
+            </text>
+
+            <text x="62" y="175"
+                  fill="#c9f5f5"
+                  font-size="15"
+                  font-family="Arial, sans-serif">
+              Joined GitHub {years} years ago
+            </text>
+
+            <text x="42" y="210"
+                  fill="#ffe11a"
+                  font-size="16"
+                  font-family="Arial, sans-serif">
+              ▦
+            </text>
+
+            <text x="62" y="210"
+                  fill="#c9f5f5"
+                  font-size="15"
+                  font-family="Arial, sans-serif">
+              @{company}
+            </text>
+
+            <text x="1040" y="45"
+                  fill="#9be7e7"
+                  font-size="11"
+                  text-anchor="end"
+                  font-family="Arial, sans-serif">
+              contributions in the last year
+            </text>
+
+            <line x1="{graph_x}"
+                  y1="{graph_y + graph_h}"
+                  x2="{graph_x + graph_w}"
+                  y2="{graph_y + graph_h}"
+                  stroke="#8de6e6"
+                  stroke-width="1"/>
+
+            <polygon points="{area}"
+                     fill="#a678f0"
+                     opacity="0.98"/>
+
+            <polyline points="{line}"
+                      fill="none"
+                      stroke="#a678f0"
+                      stroke-width="2"/>
+
+            <text x="1060" y="85"
+                  fill="#9be7e7"
+                  font-size="11">max</text>
+
+            <text x="1060" y="245"
+                  fill="#9be7e7"
+                  font-size="11">0</text>
+
+            {month_labels}
+
+          </svg>
+          '''
+
+          os.makedirs(".github/generated", exist_ok=True)
+
+          with open(
+              "github-contribution-card.svg",
+              "w",
+              encoding="utf-8"
+          ) as f:
+              f.write(svg)
+
+          print("Contribution card generated successfully.")
+          PY
+
+      - name: Commit contribution card
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add github-contribution-card.svg
+
+          git diff --cached --quiet || git commit -m "Update GitHub contribution card"
+
+          git push
