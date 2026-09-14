@@ -73,9 +73,11 @@
 # 📊 GitHub Stats
 
 <p align="center">
-<img src="https://ghstats.dev/api/card?username=PREM-GUPTA8851&theme=midnight" alt="GitHub Stats Card" />
+  <img 
+    src="https://ghstats.dev/api/card?username=PREM-GUPTA8851&theme=midnight" 
+    alt="PREM-GUPTA8851 GitHub Stats"
+  />
 </p>
-
 ---
 
 # 🔥 GitHub Streak
