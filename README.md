@@ -14,8 +14,9 @@
 
 <br>
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=24&duration=2500&pause=1000&center=true&vCenter=true&width=700&color=00F7FF&lines=Java+Developer;AI+Enthusiast;DSA+Enthusiast;Full+Stack+Developer;Open+Source+Contributor;Aspiring+AI+Software+Engineer" />
-
+<p align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=24&duration=2500&pause=1000&center=true&vCenter=true&width=780&height=60&background=161B22&color=00F7FF&border=true&border_color=30363D&border_radius=12&lines=Java+Developer+☕;AI+Enthusiast+🤖;DSA+Enthusiast+🧠;Full+Stack+Developer+💻;Open+Source+Contributor+🌟;Aspiring+AI+Software+Engineer+🚀" />
+</p>
 </div>
 
 ---
