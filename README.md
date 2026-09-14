@@ -85,14 +85,14 @@
 
 # 🔥 GitHub Streak
 
-<p align="center">
+<div align="center">
 
 <img
   src="https://streak-stats.demolab.com?user=PREM-GUPTA8851&theme=tokyonight&hide_border=true"
   alt="GitHub Streak"
 />
 
-</p>
+</div>
 
 ---
 
