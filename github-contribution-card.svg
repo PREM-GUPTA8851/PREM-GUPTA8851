@@ -1,539 +1,424 @@
-<svg xmlns="http://www.w3.org/2000/svg"
-    width="1100"
-    height="330"
-    viewBox="0 0 1100 330">
+name: Update GitHub Contribution Card
 
-  <rect x="0" y="0"
-        width="1100"
-        height="330"
-        rx="8"
-        fill="#12111f"/>
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
 
-  <rect x="1"
-        y="1"
-        width="1098"
-        height="328"
-        rx="8"
-        fill="none"
-        stroke="#303044"
-        stroke-width="2"/>
+permissions:
+  contents: write
 
-  <text x="42" y="52"
-        fill="#ff3b9d"
-        font-size="22"
-        font-family="Arial, sans-serif"
-        font-weight="500">
-    PREM-GUPTA8851
-  </text>
+jobs:
+  generate-card:
+    runs-on: ubuntu-latest
 
-  <text x="42" y="105"
-        fill="#ffe11a"
-        font-size="16"
-        font-family="Arial, sans-serif">
-    ●
-  </text>
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  <text x="62" y="105"
-        fill="#c9f5f5"
-        font-size="15"
-        font-family="Arial, sans-serif">
-    2,626 Contributions on GitHub
-  </text>
+      - name: Generate contribution card
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USERNAME: PREM-GUPTA8851
+        run: |
+          python3 <<'PY'
+          import os
+          import json
+          import urllib.request
+          from datetime import datetime
 
-  <text x="42" y="140"
-        fill="#ffe11a"
-        font-size="16"
-        font-family="Arial, sans-serif">
-    ▣
-  </text>
+          username = os.environ["USERNAME"]
+          token = os.environ["GITHUB_TOKEN"]
 
-  <text x="62" y="140"
-        fill="#c9f5f5"
-        font-size="15"
-        font-family="Arial, sans-serif">
-    10 Public Repos
-  </text>
+          query = """
+          query($login: String!) {
+            user(login: $login) {
+              login
+              createdAt
 
-  <text x="42" y="175"
-        fill="#ffe11a"
-        font-size="16"
-        font-family="Arial, sans-serif">
-    ◷
-  </text>
+              repositories(
+                ownerAffiliations: OWNER
+                first: 1
+              ) {
+                totalCount
+              }
 
-  <text x="62" y="175"
-        fill="#c9f5f5"
-        font-size="15"
-        font-family="Arial, sans-serif">
-    Joined GitHub 1 years ago
-  </text>
+              contributionsCollection {
+                contributionCalendar {
+                  totalContributions
+                  weeks {
+                    contributionDays {
+                      date
+                      contributionCount
+                    }
+                  }
+                }
+              }
+            }
+          }
+          """
 
-  <text x="42" y="210"
-        fill="#ffe11a"
-        font-size="16"
-        font-family="Arial, sans-serif">
-    ▦
-  </text>
+          payload = json.dumps({
+              "query": query,
+              "variables": {
+                  "login": username
+              }
+          }).encode()
 
-  <text x="62" y="210"
-        fill="#c9f5f5"
-        font-size="15"
-        font-family="Arial, sans-serif">
-    @
-  </text>
+          request = urllib.request.Request(
+              "https://api.github.com/graphql",
+              data=payload,
+              headers={
+                  "Authorization": f"Bearer {token}",
+                  "Content-Type": "application/json",
+                  "User-Agent": username
+              }
+          )
 
-  <text x="1040" y="45"
-        fill="#9be7e7"
-        font-size="11"
-        text-anchor="end"
-        font-family="Arial, sans-serif">
-    contributions in the last year
-  </text>
+          with urllib.request.urlopen(request) as response:
+              result = json.load(response)
 
-  <line x1="500"
-        y1="240"
-        x2="1040"
-        y2="240"
-        stroke="#8de6e6"
-        stroke-width="1"/>
+          if "errors" in result:
+              raise Exception(result["errors"])
 
-  <polygon points="500,240 500.0,240.0 501.5,240.0 503.0,240.0 504.5,240.0 505.9,239.1 507.4,240.0 508.9,240.0 510.4,240.0 511.9,240.0 513.4,240.0 514.8,240.0 516.3,240.0 517.8,240.0 519.3,240.0 520.8,240.0 522.3,240.0 523.7,240.0 525.2,240.0 526.7,240.0 528.2,240.0 529.7,240.0 531.2,240.0 532.6,240.0 534.1,240.0 535.6,240.0 537.1,240.0 538.6,240.0 540.1,240.0 541.5,240.0 543.0,240.0 544.5,236.5 546.0,234.7 547.5,235.6 549.0,226.8 550.4,231.2 551.9,226.8 553.4,234.7 554.9,235.6 556.4,233.8 557.9,233.8 559.3,231.2 560.8,232.1 562.3,230.3 563.8,230.3 565.3,229.5 566.8,233.8 568.2,225.9 569.7,233.8 571.2,233.8 572.7,239.1 574.2,233.8 575.7,240.0 577.1,234.7 578.6,233.8 580.1,240.0 581.6,229.5 583.1,231.2 584.6,233.8 586.0,231.2 587.5,238.2 589.0,231.2 590.5,228.6 592.0,230.3 593.5,233.0 594.9,228.6 596.4,234.7 597.9,222.4 599.4,239.1 600.9,228.6 602.4,225.9 603.8,238.2 605.3,239.1 606.8,230.3 608.3,227.7 609.8,227.7 611.3,226.8 612.7,231.2 614.2,230.3 615.7,232.1 617.2,230.3 618.7,240.0 620.2,239.1 621.6,231.2 623.1,230.3 624.6,237.4 626.1,231.2 627.6,233.0 629.1,231.2 630.5,228.6 632.0,232.1 633.5,225.9 635.0,240.0 636.5,235.6 638.0,238.2 639.5,240.0 640.9,240.0 642.4,240.0 643.9,240.0 645.4,240.0 646.9,240.0 648.4,240.0 649.8,240.0 651.3,240.0 652.8,240.0 654.3,240.0 655.8,240.0 657.3,239.1 658.7,240.0 660.2,240.0 661.7,239.1 663.2,227.7 664.7,233.0 666.2,240.0 667.6,240.0 669.1,240.0 670.6,240.0 672.1,240.0 673.6,240.0 675.1,240.0 676.5,240.0 678.0,240.0 679.5,240.0 681.0,240.0 682.5,240.0 684.0,240.0 685.4,240.0 686.9,240.0 688.4,240.0 689.9,240.0 691.4,240.0 692.9,240.0 694.3,240.0 695.8,240.0 697.3,240.0 698.8,240.0 700.3,240.0 701.8,240.0 703.2,240.0 704.7,240.0 706.2,240.0 707.7,240.0 709.2,240.0 710.7,240.0 712.1,240.0 713.6,240.0 715.1,240.0 716.6,240.0 718.1,240.0 719.6,240.0 721.0,240.0 722.5,240.0 724.0,240.0 725.5,240.0 727.0,240.0 728.5,240.0 729.9,240.0 731.4,240.0 732.9,240.0 734.4,240.0 735.9,240.0 737.4,240.0 738.8,240.0 740.3,240.0 741.8,240.0 743.3,240.0 744.8,240.0 746.3,240.0 747.7,240.0 749.2,224.2 750.7,240.0 752.2,240.0 753.7,240.0 755.2,240.0 756.6,240.0 758.1,240.0 759.6,240.0 761.1,240.0 762.6,240.0 764.1,240.0 765.5,240.0 767.0,240.0 768.5,240.0 770.0,223.3 771.5,240.0 773.0,237.4 774.5,228.6 775.9,226.8 777.4,228.6 778.9,225.9 780.4,226.8 781.9,227.7 783.4,231.2 784.8,240.0 786.3,237.4 787.8,224.2 789.3,240.0 790.8,240.0 792.3,238.2 793.7,232.1 795.2,233.0 796.7,234.7 798.2,237.4 799.7,229.5 801.2,240.0 802.6,233.0 804.1,229.5 805.6,239.1 807.1,233.8 808.6,240.0 810.1,240.0 811.5,240.0 813.0,240.0 814.5,240.0 816.0,240.0 817.5,240.0 819.0,240.0 820.4,234.7 821.9,239.1 823.4,238.2 824.9,239.1 826.4,240.0 827.9,240.0 829.3,219.8 830.8,223.3 832.3,236.5 833.8,224.2 835.3,233.8 836.8,234.7 838.2,240.0 839.7,240.0 841.2,240.0 842.7,240.0 844.2,240.0 845.7,239.1 847.1,237.4 848.6,235.6 850.1,239.1 851.6,240.0 853.1,240.0 854.6,240.0 856.0,240.0 857.5,240.0 859.0,240.0 860.5,240.0 862.0,240.0 863.5,240.0 864.9,240.0 866.4,240.0 867.9,240.0 869.4,240.0 870.9,240.0 872.4,240.0 873.8,239.1 875.3,230.3 876.8,240.0 878.3,231.2 879.8,227.7 881.3,214.5 882.7,229.5 884.2,238.2 885.7,224.2 887.2,225.9 888.7,217.1 890.2,218.9 891.6,224.2 893.1,239.1 894.6,232.1 896.1,239.1 897.6,237.4 899.1,238.2 900.5,235.6 902.0,239.1 903.5,239.1 905.0,239.1 906.5,239.1 908.0,237.4 909.5,231.2 910.9,238.2 912.4,238.2 913.9,239.1 915.4,237.4 916.9,236.5 918.4,239.1 919.8,238.2 921.3,238.2 922.8,236.5 924.3,239.1 925.8,236.5 927.3,229.5 928.7,239.1 930.2,230.3 931.7,209.2 933.2,147.7 934.7,187.3 936.2,208.4 937.6,208.4 939.1,214.5 940.6,192.5 942.1,234.7 943.6,200.4 945.1,80.0 946.5,190.8 948.0,224.2 949.5,214.5 951.0,208.4 952.5,212.7 954.0,210.1 955.4,231.2 956.9,220.7 958.4,232.1 959.9,229.5 961.4,222.4 962.9,206.6 964.3,233.0 965.8,235.6 967.3,215.4 968.8,232.1 970.3,228.6 971.8,221.5 973.2,233.0 974.7,239.1 976.2,225.9 977.7,229.5 979.2,239.1 980.7,234.7 982.1,239.1 983.6,239.1 985.1,239.1 986.6,239.1 988.1,229.5 989.6,233.8 991.0,189.9 992.5,223.3 994.0,229.5 995.5,233.0 997.0,231.2 998.5,226.8 999.9,216.3 1001.4,225.9 1002.9,224.2 1004.4,233.0 1005.9,201.3 1007.4,225.9 1008.8,231.2 1010.3,236.5 1011.8,237.4 1013.3,231.2 1014.8,237.4 1016.3,229.5 1017.7,230.3 1019.2,238.2 1020.7,238.2 1022.2,235.6 1023.7,238.2 1025.2,233.0 1026.6,228.6 1028.1,225.9 1029.6,239.1 1031.1,235.6 1032.6,229.5 1034.1,234.7 1035.5,228.6 1037.0,233.0 1038.5,237.4 1040.0,224.2 1040,240"
-           fill="#a678f0"
-           opacity="0.98"/>
+          user = result["data"]["user"]
+          calendar = user["contributionsCollection"]["contributionCalendar"]
 
-  <polyline points="500.0,240.0 501.5,240.0 503.0,240.0 504.5,240.0 505.9,239.1 507.4,240.0 508.9,240.0 510.4,240.0 511.9,240.0 513.4,240.0 514.8,240.0 516.3,240.0 517.8,240.0 519.3,240.0 520.8,240.0 522.3,240.0 523.7,240.0 525.2,240.0 526.7,240.0 528.2,240.0 529.7,240.0 531.2,240.0 532.6,240.0 534.1,240.0 535.6,240.0 537.1,240.0 538.6,240.0 540.1,240.0 541.5,240.0 543.0,240.0 544.5,236.5 546.0,234.7 547.5,235.6 549.0,226.8 550.4,231.2 551.9,226.8 553.4,234.7 554.9,235.6 556.4,233.8 557.9,233.8 559.3,231.2 560.8,232.1 562.3,230.3 563.8,230.3 565.3,229.5 566.8,233.8 568.2,225.9 569.7,233.8 571.2,233.8 572.7,239.1 574.2,233.8 575.7,240.0 577.1,234.7 578.6,233.8 580.1,240.0 581.6,229.5 583.1,231.2 584.6,233.8 586.0,231.2 587.5,238.2 589.0,231.2 590.5,228.6 592.0,230.3 593.5,233.0 594.9,228.6 596.4,234.7 597.9,222.4 599.4,239.1 600.9,228.6 602.4,225.9 603.8,238.2 605.3,239.1 606.8,230.3 608.3,227.7 609.8,227.7 611.3,226.8 612.7,231.2 614.2,230.3 615.7,232.1 617.2,230.3 618.7,240.0 620.2,239.1 621.6,231.2 623.1,230.3 624.6,237.4 626.1,231.2 627.6,233.0 629.1,231.2 630.5,228.6 632.0,232.1 633.5,225.9 635.0,240.0 636.5,235.6 638.0,238.2 639.5,240.0 640.9,240.0 642.4,240.0 643.9,240.0 645.4,240.0 646.9,240.0 648.4,240.0 649.8,240.0 651.3,240.0 652.8,240.0 654.3,240.0 655.8,240.0 657.3,239.1 658.7,240.0 660.2,240.0 661.7,239.1 663.2,227.7 664.7,233.0 666.2,240.0 667.6,240.0 669.1,240.0 670.6,240.0 672.1,240.0 673.6,240.0 675.1,240.0 676.5,240.0 678.0,240.0 679.5,240.0 681.0,240.0 682.5,240.0 684.0,240.0 685.4,240.0 686.9,240.0 688.4,240.0 689.9,240.0 691.4,240.0 692.9,240.0 694.3,240.0 695.8,240.0 697.3,240.0 698.8,240.0 700.3,240.0 701.8,240.0 703.2,240.0 704.7,240.0 706.2,240.0 707.7,240.0 709.2,240.0 710.7,240.0 712.1,240.0 713.6,240.0 715.1,240.0 716.6,240.0 718.1,240.0 719.6,240.0 721.0,240.0 722.5,240.0 724.0,240.0 725.5,240.0 727.0,240.0 728.5,240.0 729.9,240.0 731.4,240.0 732.9,240.0 734.4,240.0 735.9,240.0 737.4,240.0 738.8,240.0 740.3,240.0 741.8,240.0 743.3,240.0 744.8,240.0 746.3,240.0 747.7,240.0 749.2,224.2 750.7,240.0 752.2,240.0 753.7,240.0 755.2,240.0 756.6,240.0 758.1,240.0 759.6,240.0 761.1,240.0 762.6,240.0 764.1,240.0 765.5,240.0 767.0,240.0 768.5,240.0 770.0,223.3 771.5,240.0 773.0,237.4 774.5,228.6 775.9,226.8 777.4,228.6 778.9,225.9 780.4,226.8 781.9,227.7 783.4,231.2 784.8,240.0 786.3,237.4 787.8,224.2 789.3,240.0 790.8,240.0 792.3,238.2 793.7,232.1 795.2,233.0 796.7,234.7 798.2,237.4 799.7,229.5 801.2,240.0 802.6,233.0 804.1,229.5 805.6,239.1 807.1,233.8 808.6,240.0 810.1,240.0 811.5,240.0 813.0,240.0 814.5,240.0 816.0,240.0 817.5,240.0 819.0,240.0 820.4,234.7 821.9,239.1 823.4,238.2 824.9,239.1 826.4,240.0 827.9,240.0 829.3,219.8 830.8,223.3 832.3,236.5 833.8,224.2 835.3,233.8 836.8,234.7 838.2,240.0 839.7,240.0 841.2,240.0 842.7,240.0 844.2,240.0 845.7,239.1 847.1,237.4 848.6,235.6 850.1,239.1 851.6,240.0 853.1,240.0 854.6,240.0 856.0,240.0 857.5,240.0 859.0,240.0 860.5,240.0 862.0,240.0 863.5,240.0 864.9,240.0 866.4,240.0 867.9,240.0 869.4,240.0 870.9,240.0 872.4,240.0 873.8,239.1 875.3,230.3 876.8,240.0 878.3,231.2 879.8,227.7 881.3,214.5 882.7,229.5 884.2,238.2 885.7,224.2 887.2,225.9 888.7,217.1 890.2,218.9 891.6,224.2 893.1,239.1 894.6,232.1 896.1,239.1 897.6,237.4 899.1,238.2 900.5,235.6 902.0,239.1 903.5,239.1 905.0,239.1 906.5,239.1 908.0,237.4 909.5,231.2 910.9,238.2 912.4,238.2 913.9,239.1 915.4,237.4 916.9,236.5 918.4,239.1 919.8,238.2 921.3,238.2 922.8,236.5 924.3,239.1 925.8,236.5 927.3,229.5 928.7,239.1 930.2,230.3 931.7,209.2 933.2,147.7 934.7,187.3 936.2,208.4 937.6,208.4 939.1,214.5 940.6,192.5 942.1,234.7 943.6,200.4 945.1,80.0 946.5,190.8 948.0,224.2 949.5,214.5 951.0,208.4 952.5,212.7 954.0,210.1 955.4,231.2 956.9,220.7 958.4,232.1 959.9,229.5 961.4,222.4 962.9,206.6 964.3,233.0 965.8,235.6 967.3,215.4 968.8,232.1 970.3,228.6 971.8,221.5 973.2,233.0 974.7,239.1 976.2,225.9 977.7,229.5 979.2,239.1 980.7,234.7 982.1,239.1 983.6,239.1 985.1,239.1 986.6,239.1 988.1,229.5 989.6,233.8 991.0,189.9 992.5,223.3 994.0,229.5 995.5,233.0 997.0,231.2 998.5,226.8 999.9,216.3 1001.4,225.9 1002.9,224.2 1004.4,233.0 1005.9,201.3 1007.4,225.9 1008.8,231.2 1010.3,236.5 1011.8,237.4 1013.3,231.2 1014.8,237.4 1016.3,229.5 1017.7,230.3 1019.2,238.2 1020.7,238.2 1022.2,235.6 1023.7,238.2 1025.2,233.0 1026.6,228.6 1028.1,225.9 1029.6,239.1 1031.1,235.6 1032.6,229.5 1034.1,234.7 1035.5,228.6 1037.0,233.0 1038.5,237.4 1040.0,224.2"
-            fill="none"
-            stroke="#a678f0"
-            stroke-width="2"/>
+          total = calendar["totalContributions"]
+          repos = user["repositories"]["totalCount"]
 
-  <text x="1060" y="85"
-        fill="#9be7e7"
-        font-size="11">max</text>
+          # -----------------------------
+          # GitHub account age
+          # -----------------------------
 
-  <text x="1060" y="245"
-        fill="#9be7e7"
-        font-size="11">0</text>
+          created = datetime.fromisoformat(
+              user["createdAt"].replace("Z", "+00:00")
+          )
 
-  
-    <text x="523.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Oct</text>
-    
-    <text x="525.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Oct</text>
-    
-    <text x="526.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Oct</text>
-    
-    <text x="528.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Oct</text>
-    
-    <text x="529.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Oct</text>
-    
-    <text x="531.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Oct</text>
-    
-    <text x="532.6" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Oct</text>
-    
-    <text x="569.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Nov</text>
-    
-    <text x="571.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Nov</text>
-    
-    <text x="572.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Nov</text>
-    
-    <text x="574.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Nov</text>
-    
-    <text x="575.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Nov</text>
-    
-    <text x="577.1" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Nov</text>
-    
-    <text x="578.6" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Nov</text>
-    
-    <text x="614.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Dec</text>
-    
-    <text x="615.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Dec</text>
-    
-    <text x="617.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Dec</text>
-    
-    <text x="618.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Dec</text>
-    
-    <text x="620.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Dec</text>
-    
-    <text x="621.6" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Dec</text>
-    
-    <text x="623.1" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Dec</text>
-    
-    <text x="660.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jan</text>
-    
-    <text x="661.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jan</text>
-    
-    <text x="663.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jan</text>
-    
-    <text x="664.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jan</text>
-    
-    <text x="666.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jan</text>
-    
-    <text x="667.6" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jan</text>
-    
-    <text x="669.1" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jan</text>
-    
-    <text x="706.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Feb</text>
-    
-    <text x="707.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Feb</text>
-    
-    <text x="709.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Feb</text>
-    
-    <text x="710.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Feb</text>
-    
-    <text x="712.1" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Feb</text>
-    
-    <text x="713.6" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Feb</text>
-    
-    <text x="715.1" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Feb</text>
-    
-    <text x="747.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Mar</text>
-    
-    <text x="749.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Mar</text>
-    
-    <text x="750.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Mar</text>
-    
-    <text x="752.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Mar</text>
-    
-    <text x="753.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Mar</text>
-    
-    <text x="755.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Mar</text>
-    
-    <text x="756.6" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Mar</text>
-    
-    <text x="793.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Apr</text>
-    
-    <text x="795.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Apr</text>
-    
-    <text x="796.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Apr</text>
-    
-    <text x="798.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Apr</text>
-    
-    <text x="799.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Apr</text>
-    
-    <text x="801.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Apr</text>
-    
-    <text x="802.6" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Apr</text>
-    
-    <text x="838.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">May</text>
-    
-    <text x="839.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">May</text>
-    
-    <text x="841.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">May</text>
-    
-    <text x="842.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">May</text>
-    
-    <text x="844.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">May</text>
-    
-    <text x="845.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">May</text>
-    
-    <text x="847.1" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">May</text>
-    
-    <text x="884.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jun</text>
-    
-    <text x="885.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jun</text>
-    
-    <text x="887.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jun</text>
-    
-    <text x="888.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jun</text>
-    
-    <text x="890.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jun</text>
-    
-    <text x="891.6" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jun</text>
-    
-    <text x="893.1" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jun</text>
-    
-    <text x="928.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jul</text>
-    
-    <text x="930.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jul</text>
-    
-    <text x="931.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jul</text>
-    
-    <text x="933.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jul</text>
-    
-    <text x="934.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jul</text>
-    
-    <text x="936.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jul</text>
-    
-    <text x="937.6" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Jul</text>
-    
-    <text x="974.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Aug</text>
-    
-    <text x="976.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Aug</text>
-    
-    <text x="977.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Aug</text>
-    
-    <text x="979.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Aug</text>
-    
-    <text x="980.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Aug</text>
-    
-    <text x="982.1" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Aug</text>
-    
-    <text x="983.6" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Aug</text>
-    
-    <text x="1020.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Sep</text>
-    
-    <text x="1022.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Sep</text>
-    
-    <text x="1023.7" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Sep</text>
-    
-    <text x="1025.2" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Sep</text>
-    
-    <text x="1026.6" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Sep</text>
-    
-    <text x="1028.1" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Sep</text>
-    
-    <text x="1029.6" y="270"
-          fill="#9be7e7"
-          font-size="12"
-          text-anchor="middle">Sep</text>
-    
+          now = datetime.now(created.tzinfo)
 
-</svg>
+          years = now.year - created.year
+
+          if (now.month, now.day) < (created.month, created.day):
+              years -= 1
+
+          # -----------------------------
+          # Collect daily contributions
+          # -----------------------------
+
+          daily = []
+
+          for week in calendar["weeks"]:
+              for day in week["contributionDays"]:
+                  daily.append({
+                      "date": day["date"],
+                      "count": day["contributionCount"]
+                  })
+
+          # Last 365 days
+          daily = daily[-365:]
+
+          # -----------------------------
+          # Convert to weekly totals
+          # -----------------------------
+
+          weekly = []
+
+          for i in range(0, len(daily), 7):
+              chunk = daily[i:i + 7]
+
+              if not chunk:
+                  continue
+
+              weekly.append({
+                  "date": chunk[0]["date"],
+                  "count": sum(x["count"] for x in chunk)
+              })
+
+          max_count = max(
+              [x["count"] for x in weekly],
+              default=1
+          )
+
+          # -----------------------------
+          # SVG dimensions
+          # -----------------------------
+
+          WIDTH = 1400
+          HEIGHT = 400
+
+          graph_x = 600
+          graph_y = 105
+          graph_width = 680
+          graph_height = 190
+
+          points = []
+
+          for i, item in enumerate(weekly):
+
+              x = graph_x + (
+                  i / max(1, len(weekly) - 1)
+              ) * graph_width
+
+              y = graph_y + graph_height - (
+                  item["count"] / max_count
+              ) * graph_height
+
+              points.append((x, y))
+
+          # -----------------------------
+          # Smooth-ish area graph
+          # -----------------------------
+
+          line_points = " ".join(
+              f"{x:.2f},{y:.2f}"
+              for x, y in points
+          )
+
+          area_points = (
+              f"{graph_x},{graph_y + graph_height} "
+              + line_points
+              + f" {graph_x + graph_width},{graph_y + graph_height}"
+          )
+
+          # -----------------------------
+          # Month labels
+          # -----------------------------
+
+          month_labels = ""
+
+          previous_month = None
+
+          for i, item in enumerate(weekly):
+
+              date = datetime.strptime(
+                  item["date"],
+                  "%Y-%m-%d"
+              )
+
+              month = date.strftime("%b")
+
+              if month != previous_month:
+
+                  x = graph_x + (
+                      i / max(1, len(weekly) - 1)
+                  ) * graph_width
+
+                  month_labels += f'''
+                  <text
+                    x="{x:.1f}"
+                    y="335"
+                    fill="#9de8e8"
+                    font-size="15"
+                    font-family="Arial, sans-serif"
+                    text-anchor="middle">
+                    {month}
+                  </text>
+                  '''
+
+                  previous_month = month
+
+          # -----------------------------
+          # SVG
+          # -----------------------------
+
+          svg = f'''<svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="{WIDTH}"
+            height="{HEIGHT}"
+            viewBox="0 0 {WIDTH} {HEIGHT}">
+
+            <rect
+              width="{WIDTH}"
+              height="{HEIGHT}"
+              rx="10"
+              fill="#12111f"/>
+
+            <rect
+              x="1"
+              y="1"
+              width="{WIDTH - 2}"
+              height="{HEIGHT - 2}"
+              rx="10"
+              fill="none"
+              stroke="#343344"
+              stroke-width="2"/>
+
+            <!-- Username -->
+
+            <text
+              x="50"
+              y="65"
+              fill="#ff3b9d"
+              font-size="28"
+              font-family="Arial, sans-serif"
+              font-weight="500">
+              {username}
+            </text>
+
+            <!-- Contributions -->
+
+            <text
+              x="50"
+              y="125"
+              fill="#ffe01b"
+              font-size="21"
+              font-family="Arial, sans-serif">
+              ●
+            </text>
+
+            <text
+              x="78"
+              y="125"
+              fill="#c9f5f5"
+              font-size="20"
+              font-family="Arial, sans-serif">
+              {total:,} Contributions on GitHub
+            </text>
+
+            <!-- Public repos -->
+
+            <text
+              x="50"
+              y="175"
+              fill="#ffe01b"
+              font-size="21"
+              font-family="Arial, sans-serif">
+              ▣
+            </text>
+
+            <text
+              x="78"
+              y="175"
+              fill="#c9f5f5"
+              font-size="20"
+              font-family="Arial, sans-serif">
+              {repos} Public Repos
+            </text>
+
+            <!-- Joined -->
+
+            <text
+              x="50"
+              y="225"
+              fill="#ffe01b"
+              font-size="21"
+              font-family="Arial, sans-serif">
+              ◷
+            </text>
+
+            <text
+              x="78"
+              y="225"
+              fill="#c9f5f5"
+              font-size="20"
+              font-family="Arial, sans-serif">
+              Joined GitHub {years} years ago
+            </text>
+
+            <!-- Company -->
+
+            <text
+              x="50"
+              y="275"
+              fill="#ffe01b"
+              font-size="21"
+              font-family="Arial, sans-serif">
+              ▦
+            </text>
+
+            <text
+              x="78"
+              y="275"
+              fill="#c9f5f5"
+              font-size="20"
+              font-family="Arial, sans-serif">
+              @Cognizant
+            </text>
+
+            <!-- Graph title -->
+
+            <text
+              x="1280"
+              y="55"
+              fill="#9de8e8"
+              font-size="15"
+              font-family="Arial, sans-serif"
+              text-anchor="end">
+              contributions in the last year
+            </text>
+
+            <!-- Baseline -->
+
+            <line
+              x1="{graph_x}"
+              y1="{graph_y + graph_height}"
+              x2="{graph_x + graph_width}"
+              y2="{graph_y + graph_height}"
+              stroke="#8de6e6"
+              stroke-width="2"/>
+
+            <!-- Filled area -->
+
+            <polygon
+              points="{area_points}"
+              fill="#a678f0"
+              opacity="0.98"/>
+
+            <!-- Graph outline -->
+
+            <polyline
+              points="{line_points}"
+              fill="none"
+              stroke="#a678f0"
+              stroke-width="3"
+              stroke-linejoin="round"
+              stroke-linecap="round"/>
+
+            <!-- Y labels -->
+
+            <text
+              x="1300"
+              y="{graph_y + 5}"
+              fill="#9de8e8"
+              font-size="14"
+              font-family="Arial, sans-serif">
+              {max_count}
+            </text>
+
+            <text
+              x="1300"
+              y="{graph_y + graph_height + 5}"
+              fill="#9de8e8"
+              font-size="14"
+              font-family="Arial, sans-serif">
+              0
+            </text>
+
+            <!-- Months -->
+
+            {month_labels}
+
+          </svg>
+          '''
+
+          with open(
+              "github-contribution-card.svg",
+              "w",
+              encoding="utf-8"
+          ) as file:
+              file.write(svg)
+
+          print("Contribution card generated successfully.")
+
+      - name: Commit SVG
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add github-contribution-card.svg
+
+          git diff --cached --quiet || \
+            git commit -m "Update GitHub contribution card"
+
+          git push
