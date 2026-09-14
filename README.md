@@ -74,11 +74,13 @@
 # 📈 GitHub Contribution Activity
 
 <p align="center">
-  <img
-    src="./github-contribution-card.svg"
-    alt="PREM-GUPTA8851 GitHub Contribution Activity"
-    width="100%"
-  />
+
+<img
+  src="./github-contribution-card.svg"
+  alt="PREM-GUPTA8851 GitHub Contribution Activity"
+  width="100%"
+/>
+
 </p>
 
 ---
