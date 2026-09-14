@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="./Banner.png" alt="Prem Kumar Gupta Banner" width="100%">
+</p>
+
+<br>
 <div align="center">
 
 # Hi, I'm Prem Kumar Gupta
