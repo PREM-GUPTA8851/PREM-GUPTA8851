@@ -1,4 +1,3 @@
-<img width="988" height="706" alt="image" src="https://github.com/user-attachments/assets/13ec0669-1164-4265-8531-35f686f6475f" /><div align="center">
 
 # Hi, I'm Prem Kumar Gupta
 
