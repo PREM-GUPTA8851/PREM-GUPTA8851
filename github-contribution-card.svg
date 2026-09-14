@@ -13,30 +13,82 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+      # ==========================================
+      # CHECKOUT REPOSITORY
+      # ==========================================
       - name: Checkout
         uses: actions/checkout@v4
 
+
+      # ==========================================
+      # INSTALL PYTHON DEPENDENCIES
+      # ==========================================
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pillow
+
+
+      # ==========================================
+      # GENERATE CONTRIBUTION CARD
+      # ==========================================
       - name: Generate contribution card
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           USERNAME: PREM-GUPTA8851
+
         run: |
+
           python3 <<'PY'
+
           import os
           import json
           import urllib.request
           import math
           from datetime import datetime, timezone
+          from PIL import Image, ImageDraw, ImageFont
+
+
+          # ============================================================
+          # CONFIGURATION
+          # ============================================================
 
           username = os.environ["USERNAME"]
           token = os.environ["GITHUB_TOKEN"]
 
-          # -----------------------------
-          # GitHub GraphQL Query
-          # -----------------------------
+          OUTPUT = "github-contribution-card.png"
+
+          # 2x high-resolution canvas
+          WIDTH = 1640
+          HEIGHT = 480
+
+
+          # ============================================================
+          # COLORS
+          # ============================================================
+
+          BG = "#12111f"
+          BORDER = "#303044"
+
+          PINK = "#ff3b9d"
+          YELLOW = "#ffe11a"
+
+          TEXT = "#c9f5f5"
+          CYAN = "#9be7e7"
+
+          PURPLE = "#a678f0"
+
+
+          # ============================================================
+          # GITHUB GRAPHQL QUERY
+          # ============================================================
+
           query = """
           query($login: String!) {
+
             user(login: $login) {
+
               login
               name
               createdAt
@@ -49,14 +101,18 @@ jobs:
               }
 
               contributionsCollection {
+
                 contributionCalendar {
+
                   totalContributions
 
                   weeks {
+
                     contributionDays {
                       date
                       contributionCount
                     }
+
                   }
                 }
               }
@@ -64,12 +120,18 @@ jobs:
           }
           """
 
+
+          # ============================================================
+          # CALL GITHUB API
+          # ============================================================
+
           payload = json.dumps({
               "query": query,
               "variables": {
                   "login": username
               }
           }).encode("utf-8")
+
 
           request = urllib.request.Request(
               "https://api.github.com/graphql",
@@ -81,11 +143,14 @@ jobs:
               }
           )
 
+
           with urllib.request.urlopen(request) as response:
               result = json.load(response)
 
+
           if "errors" in result:
               raise Exception(result["errors"])
+
 
           user = result["data"]["user"]
 
@@ -94,12 +159,20 @@ jobs:
               ["contributionCalendar"]
           )
 
-          total = calendar["totalContributions"]
-          repos = user["repositories"]["totalCount"]
 
-          # -----------------------------
-          # Joined GitHub years
-          # -----------------------------
+          # ============================================================
+          # BASIC USER INFORMATION
+          # ============================================================
+
+          total_contributions = calendar["totalContributions"]
+
+          public_repos = user["repositories"]["totalCount"]
+
+
+          # ============================================================
+          # CALCULATE YEARS SINCE JOINING GITHUB
+          # ============================================================
+
           created = datetime.fromisoformat(
               user["createdAt"].replace("Z", "+00:00")
           )
@@ -111,29 +184,41 @@ jobs:
           if (now.month, now.day) < (created.month, created.day):
               years -= 1
 
-          year_text = "year" if years == 1 else "years"
 
-          # -----------------------------
-          # Collect daily contributions
-          # -----------------------------
+          if years == 1:
+              year_word = "year"
+          else:
+              year_word = "years"
+
+
+          # ============================================================
+          # COLLECT DAILY CONTRIBUTIONS
+          # ============================================================
+
           daily = []
 
           for week in calendar["weeks"]:
+
               for day in week["contributionDays"]:
+
                   daily.append({
                       "date": day["date"],
                       "count": day["contributionCount"]
                   })
 
+
           # Last 365 days
           daily = daily[-365:]
 
-          # -----------------------------
-          # Convert daily -> weekly
-          # -----------------------------
+
+          # ============================================================
+          # CONVERT DAILY DATA INTO WEEKLY TOTALS
+          # ============================================================
+
           weekly = []
 
           for i in range(0, len(daily), 7):
+
               chunk = daily[i:i + 7]
 
               if not chunk:
@@ -142,161 +227,552 @@ jobs:
               weekly.append({
                   "date": chunk[0]["date"],
                   "count": sum(
-                      item["count"] for item in chunk
+                      item["count"]
+                      for item in chunk
                   )
               })
 
-          # -----------------------------
-          # Smooth the weekly data
-          # -----------------------------
-          values = [item["count"] for item in weekly]
+
+          # ============================================================
+          # WEEKLY VALUES
+          # ============================================================
+
+          values = [
+              item["count"]
+              for item in weekly
+          ]
+
+
+          # ============================================================
+          # SMOOTH GRAPH
+          #
+          # 5-week moving average gives broad smooth curves
+          # instead of sharp daily spikes.
+          # ============================================================
+
+          SMOOTH_WINDOW = 5
 
           smoothed = []
 
-          window = 3
-
           for i in range(len(values)):
-              start = max(0, i - window // 2)
+
+              start = max(
+                  0,
+                  i - SMOOTH_WINDOW // 2
+              )
+
               end = min(
                   len(values),
-                  i + window // 2 + 1
+                  i + SMOOTH_WINDOW // 2 + 1
               )
 
               section = values[start:end]
 
-              smoothed.append(
-                  sum(section) / len(section)
+              average = (
+                  sum(section) /
+                  len(section)
               )
 
-          # -----------------------------
-          # SVG dimensions
-          # 2x resolution
-          # -----------------------------
-          WIDTH = 1640
-          HEIGHT = 480
+              smoothed.append(average)
 
-          # -----------------------------
-          # Graph position
-          # -----------------------------
+
+          # ============================================================
+          # GRAPH POSITION
+          # ============================================================
+
           GRAPH_X = 760
-          GRAPH_Y = 105
+          GRAPH_Y = 115
 
-          GRAPH_WIDTH = 760
+          GRAPH_WIDTH = 735
           GRAPH_HEIGHT = 270
 
           BASE_Y = GRAPH_Y + GRAPH_HEIGHT
 
-          # -----------------------------
-          # Axis maximum
-          # -----------------------------
+
+          # ============================================================
+          # GRAPH SCALE
+          # ============================================================
+
           maximum = max(
               smoothed,
               default=1
           )
 
+
+          # Round maximum to nearest 100
           axis_max = max(
               100,
-              int(math.ceil(maximum / 100.0) * 100)
+              int(
+                  math.ceil(
+                      maximum / 100
+                  ) * 100
+              )
           )
 
-          # -----------------------------
-          # Convert values to points
-          # -----------------------------
-          points = []
+
+          # ============================================================
+          # CATMULL-ROM SPLINE
+          #
+          # Creates smooth Bézier-like curve.
+          # ============================================================
+
+          def catmull_rom(p0, p1, p2, p3, t):
+
+              t2 = t * t
+              t3 = t2 * t
+
+              x = 0.5 * (
+                  (2 * p1[0])
+                  + (-p0[0] + p2[0]) * t
+                  + (
+                      2 * p0[0]
+                      - 5 * p1[0]
+                      + 4 * p2[0]
+                      - p3[0]
+                  ) * t2
+                  + (
+                      -p0[0]
+                      + 3 * p1[0]
+                      - 3 * p2[0]
+                      + p3[0]
+                  ) * t3
+              )
+
+              y = 0.5 * (
+                  (2 * p1[1])
+                  + (-p0[1] + p2[1]) * t
+                  + (
+                      2 * p0[1]
+                      - 5 * p1[1]
+                      + 4 * p2[1]
+                      - p3[1]
+                  ) * t2
+                  + (
+                      -p0[1]
+                      + 3 * p1[1]
+                      - 3 * p2[1]
+                      + p3[1]
+                  ) * t3
+              )
+
+              return x, y
+
+
+          # ============================================================
+          # CREATE ORIGINAL GRAPH POINTS
+          # ============================================================
+
+          original_points = []
 
           count_points = len(smoothed)
+
 
           for i, value in enumerate(smoothed):
 
               if count_points <= 1:
+
                   x = GRAPH_X
+
               else:
+
                   x = GRAPH_X + (
-                      i / (count_points - 1)
+                      i /
+                      (count_points - 1)
                   ) * GRAPH_WIDTH
 
+
               y = BASE_Y - (
-                  value / axis_max
+                  value /
+                  axis_max
               ) * GRAPH_HEIGHT
+
 
               y = max(
                   GRAPH_Y,
                   min(BASE_Y, y)
               )
 
-              points.append((x, y))
 
-          # -----------------------------
-          # Smooth Bézier curve
-          # -----------------------------
-          def bezier_path(points):
-              if not points:
-                  return ""
-
-              if len(points) == 1:
-                  x, y = points[0]
-                  return f"M {x:.2f},{y:.2f}"
-
-              path = (
-                  f"M {points[0][0]:.2f},"
-                  f"{points[0][1]:.2f}"
+              original_points.append(
+                  (x, y)
               )
 
-              for i in range(len(points) - 1):
 
-                  p0 = points[i - 1] if i > 0 else points[i]
-                  p1 = points[i]
-                  p2 = points[i + 1]
+          # ============================================================
+          # GENERATE MANY POINTS FOR SMOOTH CURVE
+          # ============================================================
+
+          curve_points = []
+
+
+          if len(original_points) >= 2:
+
+              for i in range(
+                  len(original_points) - 1
+              ):
+
+                  p0 = (
+                      original_points[i - 1]
+                      if i > 0
+                      else original_points[i]
+                  )
+
+                  p1 = original_points[i]
+
+                  p2 = original_points[i + 1]
+
                   p3 = (
-                      points[i + 2]
-                      if i + 2 < len(points)
+                      original_points[i + 2]
+                      if i + 2 <
+                      len(original_points)
                       else p2
                   )
 
-                  c1x = p1[0] + (
-                      p2[0] - p0[0]
-                  ) / 6
 
-                  c1y = p1[1] + (
-                      p2[1] - p0[1]
-                  ) / 6
+                  # 12 interpolation points
+                  for step in range(12):
 
-                  c2x = p2[0] - (
-                      p3[0] - p1[0]
-                  ) / 6
+                      t = step / 12.0
 
-                  c2y = p2[1] - (
-                      p3[1] - p1[1]
-                  ) / 6
+                      point = catmull_rom(
+                          p0,
+                          p1,
+                          p2,
+                          p3,
+                          t
+                      )
 
-                  path += (
-                      f" C {c1x:.2f},{c1y:.2f}"
-                      f" {c2x:.2f},{c2y:.2f}"
-                      f" {p2[0]:.2f},{p2[1]:.2f}"
-                  )
+                      curve_points.append(point)
 
-              return path
 
-          line_path = bezier_path(points)
+              curve_points.append(
+                  original_points[-1]
+              )
 
-          # -----------------------------
-          # Filled area path
-          # -----------------------------
-          area_path = (
-              f"M {GRAPH_X},{BASE_Y} "
-              + line_path
-              + f" L {GRAPH_X + GRAPH_WIDTH},{BASE_Y} "
-              + "Z"
+
+          else:
+
+              curve_points = original_points
+
+
+          # ============================================================
+          # LOAD FONTS
+          # ============================================================
+
+          FONT_PATH = (
+              "/usr/share/fonts/truetype/"
+              "dejavu/DejaVuSans.ttf"
           )
 
-          # -----------------------------
-          # Month labels
-          # Only one label per month
-          # Show every second month
-          # -----------------------------
-          month_labels = []
+          FONT_BOLD_PATH = (
+              "/usr/share/fonts/truetype/"
+              "dejavu/DejaVuSans-Bold.ttf"
+          )
 
-          seen_months = []
+
+          def font(size, bold=False):
+
+              path = (
+                  FONT_BOLD_PATH
+                  if bold
+                  else FONT_PATH
+              )
+
+              return ImageFont.truetype(
+                  path,
+                  size
+              )
+
+
+          username_font = font(
+              34,
+              bold=True
+          )
+
+          info_font = font(29)
+
+          graph_title_font = font(21)
+
+          axis_font = font(21)
+
+          month_font = font(21)
+
+
+          # ============================================================
+          # CREATE IMAGE
+          # ============================================================
+
+          image = Image.new(
+              "RGB",
+              (WIDTH, HEIGHT),
+              BG
+          )
+
+
+          draw = ImageDraw.Draw(
+              image
+          )
+
+
+          # ============================================================
+          # ROUNDED CARD BORDER
+          # ============================================================
+
+          draw.rounded_rectangle(
+              (
+                  2,
+                  2,
+                  WIDTH - 2,
+                  HEIGHT - 2
+              ),
+              radius=18,
+              fill=BG,
+              outline=BORDER,
+              width=3
+          )
+
+
+          # ============================================================
+          # USERNAME
+          # ============================================================
+
+          draw.text(
+              (70, 48),
+              username,
+              font=username_font,
+              fill=PINK
+          )
+
+
+          # ============================================================
+          # LEFT SIDE INFORMATION
+          # ============================================================
+
+          # Contributions icon
+          draw.text(
+              (70, 135),
+              "●",
+              font=info_font,
+              fill=YELLOW
+          )
+
+          draw.text(
+              (112, 137),
+              f"{total_contributions:,} "
+              "Contributions on GitHub",
+              font=info_font,
+              fill=TEXT
+          )
+
+
+          # Public repositories
+          draw.text(
+              (70, 190),
+              "▣",
+              font=info_font,
+              fill=YELLOW
+          )
+
+          draw.text(
+              (112, 192),
+              f"{public_repos} Public Repos",
+              font=info_font,
+              fill=TEXT
+          )
+
+
+          # Joined GitHub
+          draw.text(
+              (70, 245),
+              "◷",
+              font=info_font,
+              fill=YELLOW
+          )
+
+          draw.text(
+              (112, 247),
+              f"Joined GitHub "
+              f"{years} {year_word} ago",
+              font=info_font,
+              fill=TEXT
+          )
+
+
+          # Company
+          draw.text(
+              (70, 300),
+              "▦",
+              font=info_font,
+              fill=YELLOW
+          )
+
+          draw.text(
+              (112, 302),
+              "@Cognizant",
+              font=info_font,
+              fill=TEXT
+          )
+
+
+          # ============================================================
+          # GRAPH TITLE
+          # ============================================================
+
+          title = (
+              "contributions in the last year"
+          )
+
+
+          bbox = draw.textbbox(
+              (0, 0),
+              title,
+              font=graph_title_font
+          )
+
+
+          title_width = (
+              bbox[2] - bbox[0]
+          )
+
+
+          draw.text(
+              (
+                  GRAPH_X +
+                  GRAPH_WIDTH -
+                  title_width,
+                  48
+              ),
+              title,
+              font=graph_title_font,
+              fill=CYAN
+          )
+
+
+          # ============================================================
+          # BASELINE
+          # ============================================================
+
+          draw.line(
+              (
+                  GRAPH_X,
+                  BASE_Y,
+                  GRAPH_X + GRAPH_WIDTH,
+                  BASE_Y
+              ),
+              fill=CYAN,
+              width=2
+          )
+
+
+          # ============================================================
+          # DRAW FILLED GRAPH AREA
+          # ============================================================
+
+          if curve_points:
+
+              polygon = [
+                  (
+                      GRAPH_X,
+                      BASE_Y
+                  )
+              ]
+
+              polygon.extend(
+                  curve_points
+              )
+
+              polygon.append(
+                  (
+                      GRAPH_X +
+                      GRAPH_WIDTH,
+                      BASE_Y
+                  )
+              )
+
+
+              # Use separate transparent layer
+              overlay = Image.new(
+                  "RGBA",
+                  (WIDTH, HEIGHT),
+                  (0, 0, 0, 0)
+              )
+
+              overlay_draw = ImageDraw.Draw(
+                  overlay
+              )
+
+
+              overlay_draw.polygon(
+                  polygon,
+                  fill=(
+                      166,
+                      120,
+                      240,
+                      235
+                  )
+              )
+
+
+              image = Image.alpha_composite(
+                  image.convert("RGBA"),
+                  overlay
+              )
+
+
+              draw = ImageDraw.Draw(
+                  image
+              )
+
+
+              # ========================================================
+              # DRAW SMOOTH CURVE
+              # ========================================================
+
+              draw.line(
+                  curve_points,
+                  fill=PURPLE,
+                  width=5,
+                  joint="curve"
+              )
+
+
+          # ============================================================
+          # Y-AXIS NUMBERS
+          # ============================================================
+
+          for value in range(
+              0,
+              axis_max + 1,
+              100
+          ):
+
+              y = BASE_Y - (
+                  value /
+                  axis_max
+              ) * GRAPH_HEIGHT
+
+
+              draw.text(
+                  (
+                      GRAPH_X +
+                      GRAPH_WIDTH +
+                      25,
+                      y - 12
+                  ),
+                  str(value),
+                  font=axis_font,
+                  fill=CYAN
+              )
+
+
+          # ============================================================
+          # MONTH LABELS
+          #
+          # ONLY ONE LABEL PER MONTH.
+          # EVERY SECOND MONTH IS SHOWN.
+          # ============================================================
+
+          months = []
 
           for i, item in enumerate(weekly):
 
@@ -310,15 +786,21 @@ jobs:
                   date.month
               )
 
-              if key not in seen_months:
-                  seen_months.append(key)
+              if key not in months:
 
-          # Keep only every second month
-          selected_months = seen_months[::2]
+                  months.append(
+                      key
+                  )
+
+
+          # Every second month
+          selected_months = months[::2]
+
 
           for year, month in selected_months:
 
               index = None
+
 
               for i, item in enumerate(weekly):
 
@@ -331,260 +813,121 @@ jobs:
                       date.year == year
                       and date.month == month
                   ):
+
                       index = i
                       break
+
 
               if index is None:
                   continue
 
+
               if count_points <= 1:
+
                   x = GRAPH_X
+
               else:
+
                   x = GRAPH_X + (
-                      index / (count_points - 1)
+                      index /
+                      (count_points - 1)
                   ) * GRAPH_WIDTH
+
 
               label = (
                   f"{str(year)[2:]}/"
                   f"{month:02d}"
               )
 
-              month_labels.append(
-                  f'''
-                  <text
-                    x="{x:.1f}"
-                    y="414"
-                    fill="#9be7e7"
-                    font-size="22"
-                    font-family="Arial, sans-serif"
-                    text-anchor="middle">
-                    {label}
-                  </text>
-                  '''
+
+              bbox = draw.textbbox(
+                  (0, 0),
+                  label,
+                  font=month_font
               )
 
-          month_labels_svg = "\n".join(
-              month_labels
-          )
 
-          # -----------------------------
-          # Y-axis labels
-          # -----------------------------
-          y_labels = []
-
-          steps = axis_max // 100
-
-          for value in range(
-              0,
-              axis_max + 1,
-              100
-          ):
-
-              y = BASE_Y - (
-                  value / axis_max
-              ) * GRAPH_HEIGHT
-
-              y_labels.append(
-                  f'''
-                  <text
-                    x="1550"
-                    y="{y + 7:.1f}"
-                    fill="#9be7e7"
-                    font-size="21"
-                    font-family="Arial, sans-serif"
-                    text-anchor="start">
-                    {value}
-                  </text>
-                  '''
+              label_width = (
+                  bbox[2] - bbox[0]
               )
 
-          y_labels_svg = "\n".join(
-              y_labels
+
+              draw.text(
+                  (
+                      x -
+                      label_width / 2,
+                      BASE_Y + 28
+                  ),
+                  label,
+                  font=month_font,
+                  fill=CYAN
+              )
+
+
+          # ============================================================
+          # SAVE HIGH-RES PNG
+          # ============================================================
+
+          image = image.convert("RGB")
+
+          image.save(
+              OUTPUT,
+              format="PNG",
+              optimize=True
           )
 
-          # -----------------------------
-          # SVG
-          # -----------------------------
-          svg = f'''<svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="{WIDTH}"
-            height="{HEIGHT}"
-            viewBox="0 0 {WIDTH} {HEIGHT}">
 
-            <rect
-              x="0"
-              y="0"
-              width="{WIDTH}"
-              height="{HEIGHT}"
-              rx="18"
-              fill="#12111f"/>
+          # ============================================================
+          # INFORMATION
+          # ============================================================
 
-            <rect
-              x="2"
-              y="2"
-              width="{WIDTH - 4}"
-              height="{HEIGHT - 4}"
-              rx="18"
-              fill="none"
-              stroke="#303044"
-              stroke-width="3"/>
+          print("")
+          print("==========================================")
+          print(" GitHub Contribution Card Generated")
+          print("==========================================")
+          print(f" Username       : {username}")
+          print(
+              f" Contributions  : "
+              f"{total_contributions}"
+          )
+          print(
+              f" Public Repos   : "
+              f"{public_repos}"
+          )
+          print(
+              f" GitHub Years   : "
+              f"{years}"
+          )
+          print(
+              f" Image Size     : "
+              f"{WIDTH}x{HEIGHT}"
+          )
+          print(
+              f" Output         : "
+              f"{OUTPUT}"
+          )
+          print("==========================================")
+          print("")
 
-            <!-- Username -->
-            <text
-              x="70"
-              y="85"
-              fill="#ff3b9d"
-              font-size="34"
-              font-family="Arial, sans-serif"
-              font-weight="600">
-              {username}
-            </text>
 
-            <!-- Contributions -->
-            <text
-              x="70"
-              y="165"
-              fill="#ffe11a"
-              font-size="30"
-              font-family="Arial, sans-serif">
-              ●
-            </text>
+          PY
 
-            <text
-              x="110"
-              y="165"
-              fill="#c9f5f5"
-              font-size="29"
-              font-family="Arial, sans-serif">
-              {total:,} Contributions on GitHub
-            </text>
 
-            <!-- Public repos -->
-            <text
-              x="70"
-              y="220"
-              fill="#ffe11a"
-              font-size="30"
-              font-family="Arial, sans-serif">
-              ▣
-            </text>
-
-            <text
-              x="110"
-              y="220"
-              fill="#c9f5f5"
-              font-size="29"
-              font-family="Arial, sans-serif">
-              {repos} Public Repos
-            </text>
-
-            <!-- Joined -->
-            <text
-              x="70"
-              y="275"
-              fill="#ffe11a"
-              font-size="30"
-              font-family="Arial, sans-serif">
-              ◷
-            </text>
-
-            <text
-              x="110"
-              y="275"
-              fill="#c9f5f5"
-              font-size="29"
-              font-family="Arial, sans-serif">
-              Joined GitHub {years} {year_text} ago
-            </text>
-
-            <!-- Company -->
-            <text
-              x="70"
-              y="330"
-              fill="#ffe11a"
-              font-size="30"
-              font-family="Arial, sans-serif">
-              ▦
-            </text>
-
-            <text
-              x="110"
-              y="330"
-              fill="#c9f5f5"
-              font-size="29"
-              font-family="Arial, sans-serif">
-              @Cognizant
-            </text>
-
-            <!-- Graph title -->
-            <text
-              x="1510"
-              y="65"
-              fill="#9be7e7"
-              font-size="21"
-              font-family="Arial, sans-serif"
-              text-anchor="end">
-              contributions in the last year
-            </text>
-
-            <!-- Baseline -->
-            <line
-              x1="{GRAPH_X}"
-              y1="{BASE_Y}"
-              x2="{GRAPH_X + GRAPH_WIDTH}"
-              y2="{BASE_Y}"
-              stroke="#8de6e6"
-              stroke-width="2"/>
-
-            <!-- Purple filled area -->
-            <path
-              d="{area_path}"
-              fill="#a678f0"
-              opacity="0.92"/>
-
-            <!-- Smooth purple curve -->
-            <path
-              d="{line_path}"
-              fill="none"
-              stroke="#a678f0"
-              stroke-width="5"
-              stroke-linecap="round"
-              stroke-linejoin="round"/>
-
-            <!-- Y axis -->
-            {y_labels_svg}
-
-            <!-- Months -->
-            {month_labels_svg}
-
-          </svg>
-          '''
-
-          with open(
-              "github-contribution-card.svg",
-              "w",
-              encoding="utf-8"
-          ) as file:
-              file.write(svg)
-
-          print("===================================")
-          print("Contribution card generated")
-          print(f"Contributions : {total}")
-          print(f"Public repos  : {repos}")
-          print(f"GitHub years  : {years}")
-          print("===================================")
-
-      # -----------------------------
-      # Commit generated SVG
-      # -----------------------------
-      - name: Commit SVG
+      # ==========================================
+      # COMMIT PNG
+      # ==========================================
+      - name: Commit contribution card
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add github-contribution-card.svg
+          git config user.name "github-actions[bot]"
+
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add github-contribution-card.png
 
           git diff --cached --quiet || \
-            git commit -m "Update GitHub contribution card"
+            git commit \
+            -m "Update GitHub contribution card"
 
           git push
