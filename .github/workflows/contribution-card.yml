@@ -8,65 +8,137 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: contribution-card
+  cancel-in-progress: true
+
 jobs:
   generate-card:
     runs-on: ubuntu-latest
 
     steps:
+
+      # ==============================
+      # CHECKOUT
+      # ==============================
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+
+      # ==============================
+      # INSTALL PILLOW
+      # ==============================
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pillow
+
+
+      # ==============================
+      # GENERATE PNG
+      # ==============================
       - name: Generate contribution card
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           USERNAME: PREM-GUPTA8851
+
         run: |
+
           python3 <<'PY'
+
           import os
           import json
           import urllib.request
-          from datetime import datetime, timedelta
+          import math
+          from datetime import datetime, timezone
+          from PIL import Image, ImageDraw, ImageFont
+
+
+          # ==========================================
+          # CONFIG
+          # ==========================================
 
           username = os.environ["USERNAME"]
           token = os.environ["GITHUB_TOKEN"]
 
+          OUTPUT = "github-contribution-card.png"
+
+          WIDTH = 1640
+          HEIGHT = 480
+
+
+          # ==========================================
+          # COLORS
+          # ==========================================
+
+          BG = "#12111f"
+          BORDER = "#303044"
+
+          PINK = "#ff3b9d"
+          YELLOW = "#ffe11a"
+
+          TEXT = "#c9f5f5"
+          CYAN = "#9be7e7"
+
+          PURPLE = "#a678f0"
+
+
+          # ==========================================
+          # GITHUB GRAPHQL
+          # ==========================================
+
           query = """
           query($login: String!) {
             user(login: $login) {
+
               login
               name
               createdAt
-              repositories(ownerAffiliations: OWNER, first: 1) {
+
+              repositories(
+                ownerAffiliations: OWNER
+                first: 1
+              ) {
                 totalCount
               }
+
               contributionsCollection {
+
                 contributionCalendar {
+
                   totalContributions
+
                   weeks {
+
                     contributionDays {
                       date
                       contributionCount
                     }
+
                   }
+
                 }
+
               }
-              organizations(first: 20) {
-                nodes {
-                  login
-                }
-              }
+
             }
           }
           """
 
-          data = json.dumps({
+
+          payload = json.dumps({
               "query": query,
-              "variables": {"login": username}
-          }).encode()
+              "variables": {
+                  "login": username
+              }
+          }).encode("utf-8")
+
 
           request = urllib.request.Request(
               "https://api.github.com/graphql",
-              data=data,
+              data=payload,
               headers={
                   "Authorization": f"Bearer {token}",
                   "Content-Type": "application/json",
@@ -74,233 +146,720 @@ jobs:
               }
           )
 
+
           with urllib.request.urlopen(request) as response:
               result = json.load(response)
+
 
           if "errors" in result:
               raise Exception(result["errors"])
 
-          user = result["data"]["user"]
-          calendar = user["contributionsCollection"]["contributionCalendar"]
 
-          total = calendar["totalContributions"]
-          repos = user["repositories"]["totalCount"]
+          user = result["data"]["user"]
+
+          calendar = (
+              user["contributionsCollection"]
+              ["contributionCalendar"]
+          )
+
+
+          # ==========================================
+          # BASIC DATA
+          # ==========================================
+
+          total_contributions = calendar["totalContributions"]
+
+          public_repos = user["repositories"]["totalCount"]
+
+
+          # ==========================================
+          # GITHUB JOIN YEARS
+          # ==========================================
 
           created = datetime.fromisoformat(
               user["createdAt"].replace("Z", "+00:00")
           )
 
-          now = datetime.now(created.tzinfo)
+          now = datetime.now(timezone.utc)
+
           years = now.year - created.year
 
           if (now.month, now.day) < (created.month, created.day):
               years -= 1
 
-          organizations = user["organizations"]["nodes"]
-          org_names = [x["login"] for x in organizations]
+          year_word = "year" if years == 1 else "years"
 
-          company = "Cognizant" if "Cognizant" in org_names else ""
 
-          days = []
+          # ==========================================
+          # DAILY CONTRIBUTIONS
+          # ==========================================
+
+          daily = []
 
           for week in calendar["weeks"]:
+
               for day in week["contributionDays"]:
-                  days.append(day)
 
-          days = days[-365:]
+                  daily.append({
+                      "date": day["date"],
+                      "count": day["contributionCount"]
+                  })
 
-          counts = [d["contributionCount"] for d in days]
-          max_count = max(counts) if counts else 1
 
-          width = 1100
-          height = 330
+          daily = daily[-365:]
 
-          graph_x = 500
-          graph_y = 80
-          graph_w = 540
-          graph_h = 160
 
-          points = []
+          # ==========================================
+          # WEEKLY CONTRIBUTIONS
+          # ==========================================
 
-          for i, day in enumerate(days):
-              x = graph_x + (i / max(1, len(days) - 1)) * graph_w
-              y = graph_y + graph_h - (
-                  day["contributionCount"] / max_count
-              ) * graph_h
+          weekly = []
 
-              points.append((x, y))
+          for i in range(0, len(daily), 7):
 
-          line = " ".join(
-              f"{x:.1f},{y:.1f}" for x, y in points
+              chunk = daily[i:i + 7]
+
+              if not chunk:
+                  continue
+
+              weekly.append({
+                  "date": chunk[0]["date"],
+                  "count": sum(
+                      item["count"]
+                      for item in chunk
+                  )
+              })
+
+
+          values = [
+              item["count"]
+              for item in weekly
+          ]
+
+
+          # ==========================================
+          # SMOOTH GRAPH
+          # ==========================================
+
+          SMOOTH_WINDOW = 5
+
+          smoothed = []
+
+          for i in range(len(values)):
+
+              start = max(
+                  0,
+                  i - SMOOTH_WINDOW // 2
+              )
+
+              end = min(
+                  len(values),
+                  i + SMOOTH_WINDOW // 2 + 1
+              )
+
+              section = values[start:end]
+
+              average = (
+                  sum(section) /
+                  len(section)
+              )
+
+              smoothed.append(average)
+
+
+          # ==========================================
+          # GRAPH POSITION
+          # ==========================================
+
+          GRAPH_X = 760
+          GRAPH_Y = 115
+
+          GRAPH_WIDTH = 735
+          GRAPH_HEIGHT = 270
+
+          BASE_Y = GRAPH_Y + GRAPH_HEIGHT
+
+
+          # ==========================================
+          # GRAPH SCALE
+          # ==========================================
+
+          maximum = max(
+              smoothed,
+              default=1
           )
 
-          area = (
-              f"{graph_x},{graph_y + graph_h} "
-              + line
-              + f" {graph_x + graph_w},{graph_y + graph_h}"
+          axis_max = max(
+              100,
+              int(
+                  math.ceil(
+                      maximum / 100
+                  ) * 100
+              )
           )
+
+
+          # ==========================================
+          # CATMULL ROM
+          # ==========================================
+
+          def catmull_rom(p0, p1, p2, p3, t):
+
+              t2 = t * t
+              t3 = t2 * t
+
+              x = 0.5 * (
+                  (2 * p1[0])
+                  + (-p0[0] + p2[0]) * t
+                  + (
+                      2 * p0[0]
+                      - 5 * p1[0]
+                      + 4 * p2[0]
+                      - p3[0]
+                  ) * t2
+                  + (
+                      -p0[0]
+                      + 3 * p1[0]
+                      - 3 * p2[0]
+                      + p3[0]
+                  ) * t3
+              )
+
+              y = 0.5 * (
+                  (2 * p1[1])
+                  + (-p0[1] + p2[1]) * t
+                  + (
+                      2 * p0[1]
+                      - 5 * p1[1]
+                      + 4 * p2[1]
+                      - p3[1]
+                  ) * t2
+                  + (
+                      -p0[1]
+                      + 3 * p1[1]
+                      - 3 * p2[1]
+                      + p3[1]
+                  ) * t3
+              )
+
+              return x, y
+
+
+          # ==========================================
+          # ORIGINAL POINTS
+          # ==========================================
+
+          original_points = []
+
+          count_points = len(smoothed)
+
+          for i, value in enumerate(smoothed):
+
+              if count_points <= 1:
+
+                  x = GRAPH_X
+
+              else:
+
+                  x = GRAPH_X + (
+                      i /
+                      (count_points - 1)
+                  ) * GRAPH_WIDTH
+
+
+              y = BASE_Y - (
+                  value /
+                  axis_max
+              ) * GRAPH_HEIGHT
+
+
+              y = max(
+                  GRAPH_Y,
+                  min(BASE_Y, y)
+              )
+
+
+              original_points.append(
+                  (x, y)
+              )
+
+
+          # ==========================================
+          # SMOOTH CURVE
+          # ==========================================
+
+          curve_points = []
+
+          if len(original_points) >= 2:
+
+              for i in range(
+                  len(original_points) - 1
+              ):
+
+                  p0 = (
+                      original_points[i - 1]
+                      if i > 0
+                      else original_points[i]
+                  )
+
+                  p1 = original_points[i]
+
+                  p2 = original_points[i + 1]
+
+                  p3 = (
+                      original_points[i + 2]
+                      if i + 2 < len(original_points)
+                      else p2
+                  )
+
+
+                  for step in range(12):
+
+                      t = step / 12.0
+
+                      curve_points.append(
+                          catmull_rom(
+                              p0,
+                              p1,
+                              p2,
+                              p3,
+                              t
+                          )
+                      )
+
+
+              curve_points.append(
+                  original_points[-1]
+              )
+
+          else:
+
+              curve_points = original_points
+
+
+          # ==========================================
+          # FONTS
+          # ==========================================
+
+          FONT_PATH = (
+              "/usr/share/fonts/truetype/"
+              "dejavu/DejaVuSans.ttf"
+          )
+
+          FONT_BOLD_PATH = (
+              "/usr/share/fonts/truetype/"
+              "dejavu/DejaVuSans-Bold.ttf"
+          )
+
+
+          def font(size, bold=False):
+
+              path = (
+                  FONT_BOLD_PATH
+                  if bold
+                  else FONT_PATH
+              )
+
+              return ImageFont.truetype(
+                  path,
+                  size
+              )
+
+
+          username_font = font(34, True)
+          info_font = font(29)
+          graph_title_font = font(21)
+          axis_font = font(21)
+          month_font = font(21)
+
+
+          # ==========================================
+          # CREATE IMAGE
+          # ==========================================
+
+          image = Image.new(
+              "RGB",
+              (WIDTH, HEIGHT),
+              BG
+          )
+
+          draw = ImageDraw.Draw(image)
+
+
+          # ==========================================
+          # CARD
+          # ==========================================
+
+          draw.rounded_rectangle(
+              (
+                  2,
+                  2,
+                  WIDTH - 2,
+                  HEIGHT - 2
+              ),
+              radius=18,
+              fill=BG,
+              outline=BORDER,
+              width=3
+          )
+
+
+          # ==========================================
+          # USERNAME
+          # ==========================================
+
+          draw.text(
+              (70, 48),
+              username,
+              font=username_font,
+              fill=PINK
+          )
+
+
+          # ==========================================
+          # CONTRIBUTIONS
+          # ==========================================
+
+          draw.text(
+              (70, 135),
+              "●",
+              font=info_font,
+              fill=YELLOW
+          )
+
+          draw.text(
+              (112, 137),
+              f"{total_contributions:,} Contributions on GitHub",
+              font=info_font,
+              fill=TEXT
+          )
+
+
+          # ==========================================
+          # PUBLIC REPOS
+          # ==========================================
+
+          draw.text(
+              (70, 190),
+              "▣",
+              font=info_font,
+              fill=YELLOW
+          )
+
+          draw.text(
+              (112, 192),
+              f"{public_repos} Public Repos",
+              font=info_font,
+              fill=TEXT
+          )
+
+
+          # ==========================================
+          # JOINED GITHUB
+          # ==========================================
+
+          draw.text(
+              (70, 245),
+              "◷",
+              font=info_font,
+              fill=YELLOW
+          )
+
+          draw.text(
+              (112, 247),
+              f"Joined GitHub {years} {year_word} ago",
+              font=info_font,
+              fill=TEXT
+          )
+
+
+          # ==========================================
+          # COMPANY
+          # ==========================================
+
+          draw.text(
+              (70, 300),
+              "▦",
+              font=info_font,
+              fill=YELLOW
+          )
+
+          draw.text(
+              (112, 302),
+              "@Cognizant",
+              font=info_font,
+              fill=TEXT
+          )
+
+
+          # ==========================================
+          # GRAPH TITLE
+          # ==========================================
+
+          title = "contributions in the last year"
+
+          bbox = draw.textbbox(
+              (0, 0),
+              title,
+              font=graph_title_font
+          )
+
+          title_width = bbox[2] - bbox[0]
+
+          draw.text(
+              (
+                  GRAPH_X +
+                  GRAPH_WIDTH -
+                  title_width,
+                  48
+              ),
+              title,
+              font=graph_title_font,
+              fill=CYAN
+          )
+
+
+          # ==========================================
+          # BASELINE
+          # ==========================================
+
+          draw.line(
+              (
+                  GRAPH_X,
+                  BASE_Y,
+                  GRAPH_X + GRAPH_WIDTH,
+                  BASE_Y
+              ),
+              fill=CYAN,
+              width=2
+          )
+
+
+          # ==========================================
+          # FILLED GRAPH
+          # ==========================================
+
+          if curve_points:
+
+              polygon = [
+                  (
+                      GRAPH_X,
+                      BASE_Y
+                  )
+              ]
+
+              polygon.extend(curve_points)
+
+              polygon.append(
+                  (
+                      GRAPH_X + GRAPH_WIDTH,
+                      BASE_Y
+                  )
+              )
+
+
+              overlay = Image.new(
+                  "RGBA",
+                  (WIDTH, HEIGHT),
+                  (0, 0, 0, 0)
+              )
+
+              overlay_draw = ImageDraw.Draw(
+                  overlay
+              )
+
+
+              overlay_draw.polygon(
+                  polygon,
+                  fill=(
+                      166,
+                      120,
+                      240,
+                      235
+                  )
+              )
+
+
+              image = Image.alpha_composite(
+                  image.convert("RGBA"),
+                  overlay
+              )
+
+              draw = ImageDraw.Draw(image)
+
+
+              draw.line(
+                  curve_points,
+                  fill=PURPLE,
+                  width=5,
+                  joint="curve"
+              )
+
+
+          # ==========================================
+          # Y AXIS
+          # ==========================================
+
+          for value in range(
+              0,
+              axis_max + 1,
+              100
+          ):
+
+              y = BASE_Y - (
+                  value /
+                  axis_max
+              ) * GRAPH_HEIGHT
+
+
+              draw.text(
+                  (
+                      GRAPH_X +
+                      GRAPH_WIDTH +
+                      25,
+                      y - 12
+                  ),
+                  str(value),
+                  font=axis_font,
+                  fill=CYAN
+              )
+
+
+          # ==========================================
+          # MONTH LABELS
+          # ==========================================
 
           months = []
 
-          for i, day in enumerate(days):
-              date = datetime.strptime(day["date"], "%Y-%m-%d")
+          for item in weekly:
 
-              if date.day <= 7:
-                  x = graph_x + (i / max(1, len(days) - 1)) * graph_w
-                  months.append((x, date.strftime("%b")))
+              date = datetime.strptime(
+                  item["date"],
+                  "%Y-%m-%d"
+              )
 
-          month_labels = ""
+              key = (
+                  date.year,
+                  date.month
+              )
 
-          for x, month in months:
-              month_labels += f'''
-              <text x="{x:.1f}" y="270"
-                    fill="#9be7e7"
-                    font-size="12"
-                    text-anchor="middle">{month}</text>
-              '''
+              if key not in months:
+                  months.append(key)
 
-          svg = f'''<svg xmlns="http://www.w3.org/2000/svg"
-              width="{width}"
-              height="{height}"
-              viewBox="0 0 {width} {height}">
 
-            <rect x="0" y="0"
-                  width="{width}"
-                  height="{height}"
-                  rx="8"
-                  fill="#12111f"/>
+          selected_months = months[::2]
 
-            <rect x="1"
-                  y="1"
-                  width="{width-2}"
-                  height="{height-2}"
-                  rx="8"
-                  fill="none"
-                  stroke="#303044"
-                  stroke-width="2"/>
 
-            <text x="42" y="52"
-                  fill="#ff3b9d"
-                  font-size="22"
-                  font-family="Arial, sans-serif"
-                  font-weight="500">
-              {username}
-            </text>
+          for year, month in selected_months:
 
-            <text x="42" y="105"
-                  fill="#ffe11a"
-                  font-size="16"
-                  font-family="Arial, sans-serif">
-              ●
-            </text>
+              index = None
 
-            <text x="62" y="105"
-                  fill="#c9f5f5"
-                  font-size="15"
-                  font-family="Arial, sans-serif">
-              {total:,} Contributions on GitHub
-            </text>
+              for i, item in enumerate(weekly):
 
-            <text x="42" y="140"
-                  fill="#ffe11a"
-                  font-size="16"
-                  font-family="Arial, sans-serif">
-              ▣
-            </text>
+                  date = datetime.strptime(
+                      item["date"],
+                      "%Y-%m-%d"
+                  )
 
-            <text x="62" y="140"
-                  fill="#c9f5f5"
-                  font-size="15"
-                  font-family="Arial, sans-serif">
-              {repos} Public Repos
-            </text>
+                  if (
+                      date.year == year
+                      and date.month == month
+                  ):
 
-            <text x="42" y="175"
-                  fill="#ffe11a"
-                  font-size="16"
-                  font-family="Arial, sans-serif">
-              ◷
-            </text>
+                      index = i
+                      break
 
-            <text x="62" y="175"
-                  fill="#c9f5f5"
-                  font-size="15"
-                  font-family="Arial, sans-serif">
-              Joined GitHub {years} years ago
-            </text>
 
-            <text x="42" y="210"
-                  fill="#ffe11a"
-                  font-size="16"
-                  font-family="Arial, sans-serif">
-              ▦
-            </text>
+              if index is None:
+                  continue
 
-            <text x="62" y="210"
-                  fill="#c9f5f5"
-                  font-size="15"
-                  font-family="Arial, sans-serif">
-              @{company}
-            </text>
 
-            <text x="1040" y="45"
-                  fill="#9be7e7"
-                  font-size="11"
-                  text-anchor="end"
-                  font-family="Arial, sans-serif">
-              contributions in the last year
-            </text>
+              if count_points <= 1:
 
-            <line x1="{graph_x}"
-                  y1="{graph_y + graph_h}"
-                  x2="{graph_x + graph_w}"
-                  y2="{graph_y + graph_h}"
-                  stroke="#8de6e6"
-                  stroke-width="1"/>
+                  x = GRAPH_X
 
-            <polygon points="{area}"
-                     fill="#a678f0"
-                     opacity="0.98"/>
+              else:
 
-            <polyline points="{line}"
-                      fill="none"
-                      stroke="#a678f0"
-                      stroke-width="2"/>
+                  x = GRAPH_X + (
+                      index /
+                      (count_points - 1)
+                  ) * GRAPH_WIDTH
 
-            <text x="1060" y="85"
-                  fill="#9be7e7"
-                  font-size="11">max</text>
 
-            <text x="1060" y="245"
-                  fill="#9be7e7"
-                  font-size="11">0</text>
+              label = (
+                  f"{str(year)[2:]}/"
+                  f"{month:02d}"
+              )
 
-            {month_labels}
 
-          </svg>
-          '''
+              bbox = draw.textbbox(
+                  (0, 0),
+                  label,
+                  font=month_font
+              )
 
-          os.makedirs(".github/generated", exist_ok=True)
+              label_width = (
+                  bbox[2] - bbox[0]
+              )
 
-          with open(
-              "github-contribution-card.svg",
-              "w",
-              encoding="utf-8"
-          ) as f:
-              f.write(svg)
 
-          print("Contribution card generated successfully.")
+              draw.text(
+                  (
+                      x -
+                      label_width / 2,
+                      BASE_Y + 28
+                  ),
+                  label,
+                  font=month_font,
+                  fill=CYAN
+              )
+
+
+          # ==========================================
+          # SAVE PNG
+          # ==========================================
+
+          image = image.convert("RGB")
+
+          image.save(
+              OUTPUT,
+              format="PNG",
+              optimize=True
+          )
+
+
+          print("==========================================")
+          print("GitHub Contribution Card Generated")
+          print("==========================================")
+          print(f"Username      : {username}")
+          print(f"Contributions : {total_contributions}")
+          print(f"Public Repos  : {public_repos}")
+          print(f"GitHub Years  : {years}")
+          print(f"Image Size    : {WIDTH}x{HEIGHT}")
+          print(f"Output        : {OUTPUT}")
+          print("==========================================")
+
+
           PY
 
+
+      # ==========================================
+      # COMMIT AND PUSH PNG
+      # ==========================================
       - name: Commit contribution card
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add github-contribution-card.svg
+          git config user.name "github-actions[bot]"
+
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add github-contribution-card.png
+
           git diff --cached --quiet || \
             git commit \
             -m "Update GitHub contribution card"
 
           git pull --rebase origin main
+
           git push
