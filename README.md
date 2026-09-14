@@ -3,6 +3,7 @@
 </p>
 
 <br>
+
 <div align="center">
 
 # Hi, I'm Prem Kumar Gupta
@@ -17,12 +18,12 @@
 <p align="center">
   <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=24&duration=2500&pause=1000&center=true&vCenter=true&width=780&height=60&background=161B22&color=00F7FF&border=true&border_color=30363D&border_radius=12&lines=Java+Developer+☕;AI+Enthusiast+🤖;DSA+Enthusiast+🧠;Full+Stack+Developer+💻;Open+Source+Contributor+🌟;Aspiring+AI+Software+Engineer+🚀" />
 </p>
+
 </div>
 
 ---
 
 # 👨‍💻 About Me
-
 
 - 🎓 B.Tech CSE @ Lovely Professional University (LPU)
 - 💻 Passionate about Java, DSA & Problem Solving
@@ -70,10 +71,14 @@
 
 ---
 
-# 📊 GitHub Stats
+# 📈 GitHub Contribution Activity
 
 <p align="center">
-<img src="https://ghstats.dev/api/card?username=PREM-GUPTA8851&theme=midnight" alt="GitHub Stats Card" />
+  <img
+    src="./github-contribution-card.svg"
+    alt="PREM-GUPTA8851 GitHub Contribution Activity"
+    width="100%"
+  />
 </p>
 
 ---
@@ -82,7 +87,10 @@
 
 <p align="center">
 
-<img src="https://streak-stats.demolab.com?user=PREM-GUPTA8851&theme=tokyonight&hide_border=true" />
+<img
+  src="https://streak-stats.demolab.com?user=PREM-GUPTA8851&theme=tokyonight&hide_border=true"
+  alt="GitHub Streak"
+/>
 
 </p>
 
@@ -92,7 +100,12 @@
 
 <p align="center">
 
-<img width="988" height="706" alt="image" src="https://github.com/user-attachments/assets/eb1a7200-93d2-4fa0-a116-4addf124b213" />
+<img
+  width="988"
+  height="706"
+  alt="Contribution Graph"
+  src="https://github.com/user-attachments/assets/eb1a7200-93d2-4fa0-a116-4addf124b213"
+/>
 
 </p>
 
@@ -101,7 +114,12 @@
 # 🏆 GitHub Trophies
 
 <p align="center">
- <img src="https://leogitreadme.vercel.app/api/trophy?username=PREM-GUPTA8851&theme=tokyonight" alt="trophy" /> 
+
+<img
+  src="https://leogitreadme.vercel.app/api/trophy?username=PREM-GUPTA8851&theme=tokyonight"
+  alt="GitHub Trophies"
+/>
+
 </p>
 
 ---
@@ -110,12 +128,20 @@
 
 <p align="center">
 
-<a href="https://www.linkedin.com/in/prem-kumar-gupta-3b253b367/" target="_blank">
-<img src="https://skillicons.dev/icons?i=linkedin" height="50" />
+<a href="https://www.linkedin.com/in/prem-kumar-gupta-3b253b367/">
+  <img
+    src="https://skillicons.dev/icons?i=linkedin"
+    height="50"
+    alt="LinkedIn"
+  />
 </a>
 
-<a href="https://github.com/PREM-GUPTA8851" target="_blank">
-<img src="https://skillicons.dev/icons?i=github" height="50" />
+<a href="https://github.com/PREM-GUPTA8851">
+  <img
+    src="https://skillicons.dev/icons?i=github"
+    height="50"
+    alt="GitHub"
+  />
 </a>
 
 </p>
