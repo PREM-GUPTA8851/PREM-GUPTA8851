@@ -79,7 +79,7 @@
 <p align="center">
 
 <img
-  src="https://raw.githubusercontent.com/PREM-GUPTA8851/PREM-GUPTA8851/main/github-contribution-card.png"
+  src="https://raw.githubusercontent.com/PREM-GUPTA8851/PREM-GUPTA8851/main/github-contribution-card.png?v=2"
   alt="PREM-GUPTA8851 GitHub Contribution Activity"
   width="820"
 />
