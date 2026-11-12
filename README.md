@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./BG.png" alt="Prem Kumar Gupta Banner" width="100%">
+  <img src="./BG (2).png" alt="Prem Kumar Gupta Banner" width="100%">
 </p>
 
 
