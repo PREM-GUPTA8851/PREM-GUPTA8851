@@ -106,7 +106,7 @@
 <p align="center">
 
 <img
-  src="./Coding_.png"
+  src="./Coding.png"
   alt="Prem Kumar Gupta Coding Profile"
   width="100%"
 />
